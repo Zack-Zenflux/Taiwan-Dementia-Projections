@@ -1,1875 +1,1284 @@
 <!DOCTYPE html>
-<html lang="zh-Hant" class="dark">
+<html lang="zh-TW" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>臺灣歷年十大死因與健康推估對話決策系統</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        slate: {
-                            950: '#030712',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['PingFang TC', 'Microsoft JhengHei', 'sans-serif'],
-                    }
-                }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台灣失智症人口推估與健康洞察儀表板</title>
+  
+  <!-- Tailwind CSS & Font -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=300;400;500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Noto Sans TC', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f4ff',
+              100: '#d9e2ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+            },
+            accent: {
+              50: '#fff1f2',
+              500: '#f43f5e',
+              600: '#e11d48',
             }
+          }
         }
-    </script>
-    <style>
-        /* Custom scrollbar for premium look */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .dark ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #334155;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        /* Premium Custom Range Slider Styles */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
-        input[type=range]:focus {
-            outline: none;
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 32px; /* Generous vertical target space for easier clicking/dragging */
-            background: transparent; /* Make browser default track completely transparent */
-            border-radius: 9999px;
-            border: none;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 18px;
-            width: 18px;
-            border-radius: 9999px;
-            background: #2dd4bf; /* teal-400 */
-            cursor: pointer;
-            margin-top: 7px; /* Center perfectly relative to the 32px track height: (32 - 18) / 2 = 7px */
-            border: 2px solid #030712; /* slate-950 background */
-            box-shadow: 0 0 10px rgba(45, 212, 191, 0.6);
-            transition: transform 0.15s ease, background-color 0.15s ease;
-            position: relative;
-            z-index: 30; /* Keep slider handle above the custom line and dots */
-        }
-        input[type=range]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            background: #34d399; /* emerald-400 */
-        }
-        /* Firefox */
-        input[type=range]::-moz-range-track {
-            width: 100%;
-            height: 32px;
-            background: transparent;
-            border-radius: 9999px;
-            border: none;
-        }
-        input[type=range]::-moz-range-thumb {
-            height: 18px;
-            width: 18px;
-            border-radius: 9999px;
-            background: #2dd4bf;
-            cursor: pointer;
-            border: 2px solid #030712;
-            box-shadow: 0 0 10px rgba(45, 212, 191, 0.6);
-            transition: transform 0.15s ease;
-            position: relative;
-            z-index: 30;
-        }
-        input[type=range]::-moz-range-thumb:hover {
-            transform: scale(1.2);
-            background: #34d399;
-        }
-
-        /* Slide in Animation for Modal */
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-        .animate-slide-in {
-            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-    </style>
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-850 dark:bg-slate-950 dark:text-slate-100 min-h-screen font-sans flex flex-col transition-colors duration-200">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
 
-    <!-- MAIN BODY SECTION WITH SIDEBAR -->
-    <div class="flex flex-grow min-h-0">
-        <!-- LEFT SIDEBAR: Perfect Sidebar alignment matching image_ac6d0c.jpg -->
-        <aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800 flex flex-col justify-between p-5 shrink-0 hidden md:flex">
-            <div class="space-y-6">
-                <!-- Sidebar Header / Logo -->
-                <div class="flex items-center gap-3">
-                    <div class="p-2 bg-teal-500/10 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 rounded-xl">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-sm font-black text-slate-900 dark:text-white">臺灣歷年十大死因</h2>
-                        <p class="text-[10px] text-slate-400">數據與健康決策情報</p>
-                    </div>
-                </div>
-
-                <!-- Navigation Links - Exactly matched with Image 2 -->
-                <nav class="space-y-1.5 pt-4">
-                    <button id="nav-trends" onclick="switchTab('trends')" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold bg-teal-500/10 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 rounded-xl transition-all border border-teal-500/20">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2" />
-                        </svg>
-                        趨勢與指標看板
-                    </button>
-                    <button id="nav-ai" onclick="switchTab('ai')" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-xl transition-all border border-transparent">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                        </svg>
-                        AI 智慧健康專家
-                    </button>
-                    <button id="nav-aging" onclick="switchTab('aging')" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-xl transition-all border border-transparent">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        死因與高齡化關聯
-                    </button>
-                    <button id="nav-database" onclick="switchTab('database')" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-xl transition-all border border-transparent">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                        </svg>
-                        完整推估數據表
-                    </button>
-                </nav>
-            </div>
-
-            <!-- Sidebar Bottom Footer with Dark mode Toggle -->
-            <div class="space-y-4 pt-4 border-t border-slate-200/80 dark:border-slate-850">
-                <div class="flex items-center justify-between px-2">
-                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">切換深色模式</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="theme-toggle" class="sr-only peer" checked onclick="toggleTheme()">
-                        <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-teal-500"></div>
-                    </label>
-                </div>
-                <div class="text-[10px] text-slate-400 px-2 leading-relaxed">
-                    數據來源：台灣失智症協會 / 衛生福利部 105~113 年統計
-                </div>
-            </div>
-        </aside>
-
-        <!-- MAIN RIGHT CONTENT WRAPPER -->
-        <div class="flex-grow flex flex-col min-w-0">
-            <!-- MAIN MAIN CONTAINER -->
-            <main class="flex-grow p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
-                
-                <!-- ================= TAB 1: TRENDS & KPI DASHBOARD ================= -->
-                <div id="tab-trends" class="space-y-6">
-                    <!-- Timeline Control Widget -->
-                    <section class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                            <div>
-                                <h2 class="text-base font-bold text-slate-900 dark:text-teal-300">
-                                    年度歷史數據檢視選項
-                                </h2>
-                                <p class="text-xs text-slate-400">滑動滑桿、點擊前後鍵，即時連動全螢幕統計明細與指標</p>
-                            </div>
-                            
-                            <div class="flex flex-wrap items-center gap-3">
-                                <!-- AI Strategic report trigger button -->
-                                <button onclick="generateStrategicReport()" class="flex items-center gap-1.5 px-4.5 py-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-teal-500/10 transition-all text-xs">
-                                    <span>✨ AI 戰略分析報告</span>
-                                </button>
-
-                                <button id="btn-play" class="flex items-center gap-2 px-4 py-2 bg-teal-500/10 dark:bg-teal-500/20 hover:bg-teal-500/20 text-teal-600 dark:text-teal-400 font-bold rounded-xl border border-teal-500/30 transition-all text-xs">
-                                    <svg id="play-icon" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span id="play-text" class="whitespace-nowrap">自動巡航播放</span>
-                                </button>
-                                
-                                <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
-                                    <button id="btn-prev" class="p-1 text-slate-500 hover:text-teal-500 rounded transition-all">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
-                                        </svg>
-                                    </button>
-                                    <div class="w-px bg-slate-200 dark:bg-slate-700 my-1 mx-1.5"></div>
-                                    <button id="btn-next" class="p-1 text-slate-500 hover:text-teal-500 rounded transition-all">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slider Wrapper with Perfect Alignment -->
-                        <div class="space-y-4">
-                            <!-- Main Slider Track and Dynamic Dot Indicators Container -->
-                            <div class="relative w-full h-8 flex items-center">
-                                
-                                <!-- Custom Track Background Line -->
-                                <div class="absolute inset-x-[9px] top-1/2 -translate-y-1/2 h-1 bg-slate-200 dark:bg-slate-800 rounded-full z-0"></div>
-                                
-                                <!-- Dynamic Dots sitting perfectly ON the custom track line (Pixel-perfect matching at 9px offsets) -->
-                                <div class="absolute inset-x-[9px] top-1/2 -translate-y-1/2 flex justify-between items-center pointer-events-none z-10">
-                                    <span id="dot-105" class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-300 dark:border-slate-950 transition-all"></span>
-                                    <span id="dot-106" class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-300 dark:border-slate-950 transition-all"></span>
-                                    <span id="dot-107" class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-300 dark:border-slate-950 transition-all"></span>
-                                    <span id="dot-108" class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-300 dark:border-slate-950 transition-all"></span>
-                                    <span id="dot-109" class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-300 dark:border-slate-950 transition-all"></span>
-                                    <span id="dot-110" class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-300 dark:border-slate-950 transition-all"></span>
-                                    <span id="dot-111" class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-300 dark:border-slate-950 transition-all"></span>
-                                    <span id="dot-112" class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-300 dark:border-slate-950 transition-all"></span>
-                                    <span id="dot-113" class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-300 dark:border-slate-950 transition-all"></span>
-                                </div>
-                                <input type="range" id="year-slider" min="105" max="113" value="113" step="1" 
-                                       class="absolute inset-x-0 w-full h-full appearance-none bg-transparent cursor-pointer z-20 focus:outline-none">
-                            </div>
-
-                            <!-- Labels Beneath Slider -->
-                            <div class="relative h-6 mt-1 mx-[9px] select-none">
-                                <span class="absolute left-[0%] -translate-x-1/2 text-xs text-slate-500 font-semibold cursor-pointer hover:text-slate-900 dark:hover:text-slate-300 transition-all duration-200" id="label-105" onclick="changeYear(105)">105</span>
-                                <span class="absolute left-[12.5%] -translate-x-1/2 text-xs text-slate-500 font-semibold cursor-pointer hover:text-slate-900 dark:hover:text-slate-300 transition-all duration-200" id="label-106" onclick="changeYear(106)">106</span>
-                                <span class="absolute left-[25%] -translate-x-1/2 text-xs text-slate-500 font-semibold cursor-pointer hover:text-slate-900 dark:hover:text-slate-300 transition-all duration-200" id="label-107" onclick="changeYear(107)">107</span>
-                                <span class="absolute left-[37.5%] -translate-x-1/2 text-xs text-slate-500 font-semibold cursor-pointer hover:text-slate-900 dark:hover:text-slate-300 transition-all duration-200" id="label-108" onclick="changeYear(108)">108</span>
-                                <span class="absolute left-[50%] -translate-x-1/2 text-xs text-slate-500 font-semibold cursor-pointer hover:text-slate-900 dark:hover:text-slate-300 transition-all duration-200" id="label-109" onclick="changeYear(109)">109</span>
-                                <span class="absolute left-[62.5%] -translate-x-1/2 text-xs text-slate-500 font-semibold cursor-pointer hover:text-slate-900 dark:hover:text-slate-300 transition-all duration-200" id="label-110" onclick="changeYear(110)">110</span>
-                                <span class="absolute left-[75%] -translate-x-1/2 text-xs text-slate-500 font-semibold cursor-pointer hover:text-slate-900 dark:hover:text-slate-300 transition-all duration-200" id="label-111" onclick="changeYear(111)">111</span>
-                                <span class="absolute left-[87.5%] -translate-x-1/2 text-xs text-slate-500 font-semibold cursor-pointer hover:text-slate-900 dark:hover:text-slate-300 transition-all duration-200" id="label-112" onclick="changeYear(112)">112</span>
-                                <span class="absolute left-[100%] -translate-x-1/2 text-xs text-slate-400 dark:text-slate-500 font-semibold cursor-pointer hover:text-slate-900 dark:hover:text-slate-300 transition-all duration-200" id="label-113" onclick="changeYear(113)">113</span>
-                            </div>
-                        </div>
-
-                        <!-- Selected Indicator -->
-                        <div class="mt-4 flex flex-wrap gap-2 items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-4">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-slate-400">目前檢視：</span>
-                                <span id="active-year-badge" class="text-xl font-black bg-gradient-to-r from-teal-500 to-indigo-500 bg-clip-text text-transparent">民國 113 年度</span>
-                                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded text-[10px]" id="gregorian-badge">西元 2024 年</span>
-                            </div>
-                            <div id="top10-quick-sum" class="text-xs font-medium text-slate-400">
-                                當期十大死因總死亡數: <span id="quick-sum-deaths" class="font-bold text-slate-800 dark:text-slate-200">201,383</span> 人
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- AI Insight Report -->
-                    <section class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-                        <h3 class="text-xs font-black uppercase tracking-wider text-teal-600 dark:text-teal-400 mb-3 flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                            </svg>
-                            AI 彙整資訊
-                        </h3>
-                        <div id="ai-insight" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed space-y-2">
-                            <!-- Populated by JS -->
-                        </div>
-                    </section>
-
-                    <!-- 10 KPI Cards Grid -->
-                    <section class="space-y-4">
-                        <div>
-                            <h2 class="text-base font-black text-slate-900 dark:text-white">
-                                該年度十大死因排名
-                            </h2>
-                            <p class="text-xs text-slate-400">依據粗死亡率正確排名 1 ~ 10 名指標分析卡</p>
-                        </div>
-
-                        <div id="kpi-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                            <!-- Dynamic cards rendering -->
-                        </div>
-                    </section>
-
-                    <!-- Dual Chart Area -->
-                    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        <!-- Trend Chart -->
-                        <div class="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-sm">
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-200">歷年死亡人數趨勢</h3>
-                                <p class="text-[11px] text-slate-400">民國 105 - 113 年主要死因死亡人數走勢比對</p>
-                            </div>
-                            
-                            <!-- Checklist legends -->
-                            <div class="flex flex-wrap gap-1.5 text-[10px] p-2 bg-slate-50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-800" id="disease-toggles"></div>
-
-                            <div class="relative h-[280px] w-full">
-                                <canvas id="trendChart"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Structure Bar Chart -->
-                        <div class="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-sm">
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-200">當期十大死因分佈結構</h3>
-                                <p class="text-[11px] text-slate-400">當年度死亡率 (每十萬人口) 分佈對比</p>
-                            </div>
-                            <div class="relative h-[320px] w-full">
-                                <canvas id="barChart"></canvas>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- CAGR Analysis Section -->
-                    <section class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                        <div class="mb-4">
-                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-200 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                                長期年均複合成長率 (105-113年 CAGR % 分析)
-                            </h3>
-                            <p class="text-[11px] text-slate-400">各死因長期成長速率對照，正成長代表威脅程度上升；負成長代表獲得穩定公衛控制</p>
-                        </div>
-                        <div class="h-[250px]">
-                            <canvas id="cagrChart"></canvas>
-                        </div>
-                    </section>
-                </div>
-
-                <!-- ================= TAB 2: AI DIALOGUE CLINIC (AI 智慧健康專家) ================= -->
-                <div id="tab-ai" class="hidden flex flex-col space-y-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[550px]">
-                        <!-- Left column: Smart dialogue recommended questions (1/3 width) -->
-                        <section class="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 flex flex-col justify-between h-full shadow-sm overflow-hidden">
-                            <div class="space-y-4 overflow-y-auto pr-1">
-                                <div>
-                                    <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-                                        <span class="text-yellow-500">💡</span> 智慧對話推薦問題
-                                    </h3>
-                                    <p class="text-[11px] text-slate-400 mt-0.5">點擊下方預設的策略提問，AI 專家將自動整合數據進行回答：</p>
-                                </div>
-
-                                <!-- Clickable prompt cards -->
-                                <div id="chat-chips" class="space-y-2.5">
-                                    <!-- Dynamic suggestions go here -->
-                                </div>
-                            </div>
-
-                            <!-- Footer trademark -->
-                            <div class="border-t border-slate-100 dark:border-slate-800/80 pt-4 text-center shrink-0">
-                                <span class="text-[10px] text-slate-400 font-medium">由 Gemini 2.5 專家模型提供智慧分析</span>
-                            </div>
-                        </section>
-
-                        <!-- Right column: AI Smart Health Decision Assistant Chat Workspace (2/3 width) -->
-                        <section class="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl flex flex-col justify-between h-full shadow-sm overflow-hidden">
-                            <!-- Assistant header with connection status & reset -->
-                            <div class="px-5 py-4 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/20">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    <span class="text-xs font-bold text-slate-700 dark:text-slate-300">AI 智慧健康決策助理</span>
-                                    <span class="text-[10px] text-slate-400 hidden sm:inline">已連線台灣高齡推估與歷年十大死因資料庫</span>
-                                </div>
-                                <button onclick="clearChat()" class="text-[10px] text-slate-400 hover:text-rose-500 transition-colors font-semibold flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                    清除對話紀錄
-                                </button>
-                            </div>
-
-                            <!-- Scrollable Dialogue area -->
-                            <div id="chat-log" class="flex-grow overflow-y-auto p-5 space-y-4">
-                                <!-- Balloon bubbles dynamically rendered -->
-                            </div>
-
-                            <!-- Premium input dock with rounded border & send button -->
-                            <div class="p-4 border-t border-slate-200/80 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/20">
-                                <div class="relative flex items-center">
-                                    <input type="text" id="chat-input" placeholder="請輸入關於失智症推估、公衛健康或高齡化死因政策等相關問題..." 
-                                           class="w-full bg-white dark:bg-slate-850 text-xs border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5 pr-12 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-500 shadow-sm transition-all">
-                                    <button onclick="sendChatMessage()" class="absolute right-2 p-2 bg-teal-500 hover:bg-teal-400 text-slate-950 rounded-lg transition-colors shadow-md shadow-teal-500/10">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-
-                <!-- ================= TAB 3: AGING CORRELATION (死因與高齡化關聯) ================= -->
-                <div id="tab-aging" class="hidden space-y-6">
-                    <!-- 死因與高齡化關聯 -->
-                    <section class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                            <div>
-                                <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-                                    📊 死因與高齡化關聯統計 (105-113年)
-                                </h3>
-                                <p class="text-[11px] text-slate-400 mt-0.5">彙整歷年高齡化關鍵死因指標。由中位年齡及慢性共病發生率，解構人口結構轉型威脅：</p>
-                            </div>
-                            <button onclick="triggerAiAgingAnalysis()" class="px-4 py-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-slate-950 dark:text-white font-bold text-xs rounded-xl shadow-md shadow-teal-500/10 transition-all flex items-center gap-1.5">
-                                <span>✨ AI 深度關聯 analysis</span>
-                            </button>
-                        </div>
-
-                        <!-- Horizontal Grid Data Table in Dementia layout style -->
-                        <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
-                            <table class="w-full text-left text-xs border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-wider">
-                                        <th class="p-3.5 whitespace-nowrap bg-slate-100/50 dark:bg-slate-900/50">健康與死亡關聯指標</th>
-                                        <th class="p-3.5 text-center font-mono">105年</th>
-                                        <th class="p-3.5 text-center font-mono">106年</th>
-                                        <th class="p-3.5 text-center font-mono">107年</th>
-                                        <th class="p-3.5 text-center font-mono">108年</th>
-                                        <th class="p-3.5 text-center font-mono">109年</th>
-                                        <th class="p-3.5 text-center font-mono">110年</th>
-                                        <th class="p-3.5 text-center font-mono">111年</th>
-                                        <th class="p-3.5 text-center font-mono">112年</th>
-                                        <th class="p-3.5 text-center font-mono bg-teal-500/5 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400">113年</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-200 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                                        <td class="p-3.5 font-bold bg-slate-100/30 dark:bg-slate-900/30">全國總死亡人數 (人)</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">172,418</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">171,857</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">172,859</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">175,424</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">173,067</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">184,172</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">208,438</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">205,575</td>
-                                        <td class="p-3.5 text-center font-mono font-bold bg-teal-500/5 dark:bg-teal-500/10 text-slate-800 dark:text-teal-300">201,383</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                                        <td class="p-3.5 font-bold bg-slate-100/30 dark:bg-slate-900/30">前十大死亡年齡中位數 (歲)</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">77.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">77.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">77.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">77.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">77.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">77.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">78.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">77.0</td>
-                                        <td class="p-3.5 text-center font-mono font-bold bg-teal-500/5 dark:bg-teal-500/10 text-teal-500">77.0</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                                        <td class="p-3.5 font-bold bg-slate-100/30 dark:bg-slate-900/30 text-rose-600 dark:text-rose-400">肺炎死亡人數 (人)</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">12,923</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">13,206</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">14,202</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">15,185</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">13,736</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">13,549</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">14,320</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">16,702</td>
-                                        <td class="p-3.5 text-center font-mono font-bold bg-teal-500/5 dark:bg-teal-500/10 text-rose-500">17,259</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                                        <td class="p-3.5 font-bold bg-slate-100/30 dark:bg-slate-900/30 text-amber-500">高血壓性疾病死亡人數 (人)</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">5,956</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">6,149</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">6,067</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">6,255</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">6,706</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">7,886</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">8,720</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">8,930</td>
-                                        <td class="p-3.5 text-center font-mono font-bold bg-teal-500/5 dark:bg-teal-500/10 text-amber-500">8,928</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                                        <td class="p-3.5 font-bold bg-slate-100/30 dark:bg-slate-900/30 text-indigo-500">癌症死亡中位年齡 (歲)</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">69.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">69.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">69.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">69.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">70.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">70.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">70.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">70.0</td>
-                                        <td class="p-3.5 text-center font-mono font-bold bg-teal-500/5 dark:bg-teal-500/10 text-indigo-400">71.0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-
-                    <!-- 臺灣失智症人口長期推估 -->
-                    <section class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                            <div>
-                                <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-                                    🧠 臺灣失智症人口長期推估 (110-159年)
-                                </h3>
-                                <p class="text-[11px] text-slate-400 mt-0.5">依據國家發展委員會「中華民國人口推估中推計」及五歲年齡盛行率演算模型：</p>
-                            </div>
-                            <button onclick="triggerAiDementiaAnalysis()" class="px-4 py-2 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-slate-950 dark:text-white font-bold text-xs rounded-xl shadow-md shadow-teal-500/10 transition-all flex items-center gap-1.5">
-                                <span>✨ AI 失智海嘯政策諮詢</span>
-                            </button>
-                        </div>
-
-                        <!-- Horizontal Grid Data Table -->
-                        <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
-                            <table class="w-full text-left text-xs border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-wider">
-                                        <th class="p-3.5 whitespace-nowrap bg-slate-100/50 dark:bg-slate-900/50">失智推估關鍵指標</th>
-                                        <th class="p-3.5 text-center font-mono">110年底</th>
-                                        <th class="p-3.5 text-center font-mono">115年</th>
-                                        <th class="p-3.5 text-center font-mono bg-teal-500/5 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400">120年</th>
-                                        <th class="p-3.5 text-center font-mono">125年</th>
-                                        <th class="p-3.5 text-center font-mono">130年</th>
-                                        <th class="p-3.5 text-center font-mono">135年</th>
-                                        <th class="p-3.5 text-center font-mono">140年</th>
-                                        <th class="p-3.5 text-center font-mono">145年</th>
-                                        <th class="p-3.5 text-center font-mono">150年</th>
-                                        <th class="p-3.5 text-center font-mono">155年</th>
-                                        <th class="p-3.5 text-center font-mono">159年</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-200 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                                        <td class="p-3.5 font-bold bg-slate-100/30 dark:bg-slate-900/30">全台總人口 (千人)</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">23,375</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">23,404</td>
-                                        <td class="p-3.5 text-center font-mono font-bold bg-teal-500/5 dark:bg-teal-500/10 text-slate-800 dark:text-slate-300">23,140</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">22,693</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">22,024</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">21,162</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">20,157</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">19,056</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">17,911</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">16,747</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">15,814</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                                        <td class="p-3.5 font-bold bg-slate-100/30 dark:bg-slate-900/30 text-teal-600 dark:text-teal-400">45-64歲失智數 (千人)</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">11.3</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">11.7</td>
-                                        <td class="p-3.5 text-center font-mono font-bold bg-teal-500/5 dark:bg-teal-500/10 text-teal-500">11.5</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">11.1</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">10.8</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">9.9</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">8.9</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">8.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">7.2</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">6.4</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">6.0</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                                        <td class="p-3.5 font-bold bg-slate-100/30 dark:bg-slate-900/30 text-indigo-500">65歲以上失智人口 (千人)</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">300.8</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">361.3</td>
-                                        <td class="p-3.5 text-center font-mono font-bold bg-teal-500/5 dark:bg-teal-500/10 text-indigo-400">445.1</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">542.2</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">649.4</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">740.2</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">792.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">823.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">843.7</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">849.8</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">839.2</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                                        <td class="p-3.5 font-bold bg-slate-100/30 dark:bg-slate-900/30 text-amber-500">65歲以上老齡失智盛行率</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">7.64%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">7.41%</td>
-                                        <td class="p-3.5 text-center font-mono font-bold bg-teal-500/5 dark:bg-teal-500/10 text-amber-500">7.77%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">8.52%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">9.51%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">10.15%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">10.67%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">11.22%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">11.65%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">12.16%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">12.76%</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                                        <td class="p-3.5 font-bold bg-slate-100/30 dark:bg-slate-900/30 text-rose-600 dark:text-rose-400">全國失智總人口數 (千人)</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">312.2</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">373.0</td>
-                                        <td class="p-3.5 text-center font-mono font-bold bg-teal-500/5 dark:bg-teal-500/10 text-rose-500">456.6</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">553.4</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">660.1</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">750.1</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">801.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">831.0</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">850.9</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">856.2</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">845.2</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                                        <td class="p-3.5 font-bold bg-slate-100/30 dark:bg-slate-900/30 text-slate-800 dark:text-slate-300">失智總人口佔全國總人口比</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">1.34%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">1.59%</td>
-                                        <td class="p-3.5 text-center font-mono font-bold bg-teal-500/5 dark:bg-teal-500/10 text-slate-800 dark:text-slate-300">1.97%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">2.44%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">3.00%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">3.54%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">3.97%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">4.36%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">4.75%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">5.11%</td>
-                                        <td class="p-3.5 text-center font-mono text-slate-500">5.34%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-                </div>
-
-                <!-- ================= TAB 4: COMPLETE DATABASE TABLE ================= -->
-                <div id="tab-database" class="hidden space-y-6">
-                    <section class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                            <div>
-                                <h3 class="text-base font-black text-slate-900 dark:text-white" id="table-tab-title">
-                                    完整統計數據明細表
-                                </h3>
-                                <p class="text-xs text-slate-400">可在下方切換資料源，並進行快速過濾搜尋與 CSV 資料導出</p>
-                            </div>
-                            
-                            <!-- Toggle switch to select between Top 10 Deaths vs Dementia Projection -->
-                            <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 self-start sm:self-auto">
-                                <button onclick="switchTableSource('deaths')" id="btn-tbl-deaths" class="px-4 py-1.5 text-xs font-bold bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-300 rounded-lg shadow-sm transition-all">
-                                    十大死因歷史明細
-                                </button>
-                                <button onclick="switchTableSource('dementia')" id="btn-tbl-dementia" class="px-4 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 rounded-lg transition-all">
-                                    臺灣失智人口推估
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Search Filter and Download Row -->
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                            <input type="text" id="table-search" oninput="renderTable()" placeholder="快速搜尋明細字詞..." 
-                                   class="bg-slate-50 dark:bg-slate-850 text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 w-full sm:w-64 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-500">
-                            
-                            <button onclick="exportCSV()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-1.5 transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                匯出當前數據為 CSV
-                            </button>
-                        </div>
-
-                        <!-- Table Display Port -->
-                        <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
-                            <table class="w-full text-left text-xs border-collapse">
-                                <thead id="table-head">
-                                    <!-- Dynamic headers based on chosen database source -->
-                                </thead>
-                                <tbody id="table-body" class="divide-y divide-slate-200/80 dark:divide-slate-800/80">
-                                    <!-- Dynamic rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-                </div>
-
-            </main>
+  <div class="flex h-screen overflow-hidden">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="hidden md:flex flex-col w-64 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 shrink-0">
+      <div class="p-6 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 bg-brand-500 rounded-lg text-white">
+            <i data-lucide="brain-circuit" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">失智症推估</h1>
+            <span class="text-xs text-slate-500 dark:text-slate-400">數據與健康決策情報</span>
+          </div>
         </div>
-    </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all bg-brand-500 text-white shadow-md shadow-brand-500/10">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>趨勢與指標看板</span>
+        </button>
+        <button onclick="switchTab('ai-chat')" id="btn-tab-ai-chat" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>AI 智慧健康專家</span>
+        </button>
+        <button onclick="switchTab('death-analysis')" id="btn-tab-death-analysis" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>死因與高齡化關聯</span>
+        </button>
+        <button onclick="switchTab('raw-data')" id="btn-tab-raw-data" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="table-properties" class="w-4 h-4"></i>
+          <span>完整推估數據表</span>
+        </button>
+      </nav>
 
-    <!-- ADDED: Premium AI Strategy Modal Overlay -->
-    <div id="strategy-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-2xl h-[80vh] flex flex-col justify-between shadow-2xl rounded-2xl overflow-hidden relative">
-            <!-- Header -->
-            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/20">
-                <div class="flex items-center gap-2.5">
-                    <span class="p-2 bg-teal-500/10 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 rounded-lg">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z" />
-                        </svg>
-                    </span>
-                    <div>
-                        <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100" id="strategy-modal-title">✨ AI 戰略決策政策報告</h3>
-                        <p class="text-[10px] text-slate-400">基於當前選定之公衛數據模型動態彙整</p>
-                    </div>
-                </div>
-                <button onclick="closeStrategyModal()" class="text-slate-400 hover:text-rose-500 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Content Area with scroll -->
-            <div id="strategy-content" class="flex-grow overflow-y-auto p-6 space-y-4 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
-                <!-- Dynamically written report -->
-            </div>
-
-            <!-- Footer -->
-            <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/25 flex items-center justify-end">
-                <button onclick="closeStrategyModal()" class="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-all">
-                    關閉戰略報告
-                </button>
-            </div>
+      <div class="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+        <!-- Light / Dark Mode Toggle -->
+        <button onclick="toggleDarkMode()" class="w-full flex items-center justify-between px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-all">
+          <span class="text-xs font-medium flex items-center space-x-2">
+            <i data-lucide="sun" class="w-4 h-4 text-amber-500 block dark:hidden"></i>
+            <i data-lucide="moon" class="w-4 h-4 text-indigo-400 hidden dark:block"></i>
+            <span class="dark:hidden">切換深色模式</span>
+            <span class="hidden dark:inline">切換淺色模式</span>
+          </span>
+          <div class="w-8 h-4 bg-slate-300 dark:bg-brand-500 rounded-full relative p-0.5 transition-all">
+            <div class="w-3 h-3 bg-white rounded-full transition-transform transform translate-x-0 dark:translate-x-4"></div>
+          </div>
+        </button>
+        <div class="text-center">
+          <span class="text-[10px] text-slate-400 dark:text-slate-500">數據來源: 台灣失智症協會 / 衛福部</span>
         </div>
-    </div>
+      </div>
+    </aside>
 
-    <!-- BOTTOM DUAL-COLUMN FOOTER: Exactly matching Requirement 2 -->
-    <footer class="border-t border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-6 transition-colors duration-200 shrink-0">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="text-left text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                <p>數據來源：臺灣失智症協會 / 中華民國衛生福利部最新十大死因統計專報</p>
-                <p>設計建構：高階決策主管動態資訊戰情室系統 © 2026. All rights reserved.</p>
-            </div>
-            <div>
-                <!-- Button precisely linked to "AI 智慧健康專家" tab (switchTab('ai')) -->
-                <button onclick="switchTab('ai')" class="group flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-teal-500/10 to-indigo-500/10 hover:from-teal-500/20 hover:to-indigo-500/20 text-teal-600 dark:text-teal-400 font-bold text-xs rounded-xl border border-teal-500/20 hover:border-teal-500/40 shadow-sm transition-all duration-200">
-                    <span>點此諮詢 AI 應對策略</span>
-                    <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-            </div>
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+      
+      <!-- Top header -->
+      <header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 flex items-center justify-between px-6 z-10 shrink-0">
+        <div class="flex items-center space-x-4">
+          <!-- Mobile Sidebar Toggle -->
+          <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+          </button>
+          <h2 class="font-semibold text-lg" id="header-title">台灣失智症人口推估儀表板</h2>
         </div>
-    </footer>
+        
+        <!-- Quick Stats Banner -->
+        <div class="flex items-center space-x-4">
+          <div class="hidden lg:flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
+            <span class="inline-block w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse"></span>
+            <span>失智時鐘：台灣每 30 分鐘新增 1 名失智者</span>
+          </div>
+          <button onclick="openNotificationModal()" class="p-2 rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 relative">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
+          </button>
+        </div>
+      </header>
 
-    <!-- JavaScript - Data Engine and Core Application Logic -->
-    <script>
-        // 1. Unified Dataset
-        const rawData = {
-            "惡性腫瘤": {
-                id: "cancer",
-                code: "C00-C97",
-                name: "惡性腫瘤 (癌症)",
-                color: "rgba(244, 63, 94, 1)", // rose-500
-                years: {
-                    113: { rank: 1, deaths: 54032, rate: 230.8, stdRate: 113.3, medianAge: 71.0 },
-                    112: { rank: 1, deaths: 53126, rate: 227.6, stdRate: 115.4, medianAge: 70.0 },
-                    111: { rank: 1, deaths: 51927, rate: 222.7, stdRate: 116.0, medianAge: 70.0 },
-                    110: { rank: 1, deaths: 51656, rate: 220.1, stdRate: 118.2, medianAge: 70.0 },
-                    109: { rank: 1, deaths: 50161, rate: 212.7, stdRate: 117.3, medianAge: 70.0 },
-                    108: { rank: 1, deaths: 50232, rate: 212.9, stdRate: 121.3, medianAge: 69.0 },
-                    107: { rank: 1, deaths: 49326, rate: 209.2, stdRate: 123.0, medianAge: 69.0 },
-                    106: { rank: 1, deaths: 48571, rate: 206.2, stdRate: 124.7, medianAge: 69.0 },
-                    105: { rank: 1, deaths: 48291, rate: 205.4, stdRate: 128.1, medianAge: 69.0 }
-                }
-            },
-            "心臟疾病": {
-                id: "heart",
-                code: "I01-I02,I05-I09,I20-I25,I27,I30-I52",
-                name: "心臟疾病 (高血壓性疾病除外)",
-                color: "rgba(239, 68, 68, 1)", // red-500
-                years: {
-                    113: { rank: 2, deaths: 23276, rate: 99.4, stdRate: 45.5, medianAge: 79.0 },
-                    112: { rank: 2, deaths: 23424, rate: 100.3, stdRate: 46.8, medianAge: 79.0 },
-                    111: { rank: 2, deaths: 23668, rate: 101.5, stdRate: 47.8, medianAge: 80.0 },
-                    110: { rank: 2, deaths: 21852, rate: 93.1, stdRate: 45.6, medianAge: 80.0 },
-                    109: { rank: 2, deaths: 20457, rate: 86.7, stdRate: 43.8, medianAge: 80.0 },
-                    108: { rank: 2, deaths: 19859, rate: 84.2, stdRate: 43.6, medianAge: 80.0 },
-                    107: { rank: 2, deaths: 19637, rate: 83.3, stdRate: 44.7, medianAge: 80.0 },
-                    106: { rank: 2, deaths: 18795, rate: 79.8, stdRate: 44.4, medianAge: 79.0 },
-                    105: { rank: 2, deaths: 18948, rate: 80.6, stdRate: 46.1, medianAge: 79.0 }
-                }
-            },
-            "肺炎": {
-                id: "pneumonia",
-                code: "J12-J18",
-                name: "肺炎",
-                color: "rgba(14, 165, 233, 1)", // sky-500
-                years: {
-                    113: { rank: 3, deaths: 17259, rate: 73.7, stdRate: 30.1, medianAge: 84.0 },
-                    112: { rank: 3, deaths: 16702, rate: 71.6, stdRate: 29.9, medianAge: 85.0 },
-                    111: { rank: 4, deaths: 14320, rate: 61.4, stdRate: 26.3, medianAge: 85.0 },
-                    110: { rank: 3, deaths: 13549, rate: 57.7, stdRate: 25.3, medianAge: 85.0 },
-                    109: { rank: 3, deaths: 13736, rate: 58.2, stdRate: 26.4, medianAge: 85.0 },
-                    108: { rank: 3, deaths: 15185, rate: 64.4, stdRate: 30.0, medianAge: 85.0 },
-                    107: { rank: 3, deaths: 14202, rate: 60.2, stdRate: 29.0, medianAge: 85.0 },
-                    106: { rank: 3, deaths: 13206, rate: 56.1, stdRate: 28.0, medianAge: 85.0 },
-                    105: { rank: 3, deaths: 12923, rate: 55.0, stdRate: 28.4, medianAge: 85.0 }
-                }
-            },
-            "腦血管疾病": {
-                id: "stroke",
-                code: "I60-I69",
-                name: "腦血管疾病",
-                color: "rgba(168, 85, 247, 1)", // purple-500
-                years: {
-                    113: { rank: 4, deaths: 12463, rate: 53.2, stdRate: 23.9, medianAge: 79.0 },
-                    112: { rank: 4, deaths: 12371, rate: 53.0, stdRate: 24.6, medianAge: 79.0 },
-                    111: { rank: 5, deaths: 12416, rate: 53.2, stdRate: 25.1, medianAge: 80.0 },
-                    110: { rank: 4, deaths: 12182, rate: 51.9, stdRate: 25.2, medianAge: 80.0 },
-                    109: { rank: 4, deaths: 11821, rate: 50.1, stdRate: 25.2, medianAge: 79.0 },
-                    108: { rank: 4, deaths: 12176, rate: 51.6, stdRate: 26.7, medianAge: 80.0 },
-                    107: { rank: 4, deaths: 12467, rate: 52.9, stdRate: 28.2, medianAge: 79.0 },
-                    106: { rank: 4, deaths: 12721, rate: 54.0, stdRate: 29.7, medianAge: 80.0 },
-                    105: { rank: 4, deaths: 12820, rate: 54.5, stdRate: 30.9, medianAge: 79.0 }
-                }
-            },
-            "糖尿病": {
-                id: "diabetes",
-                code: "E10-E14",
-                name: "糖尿病",
-                color: "rgba(245, 158, 11, 1)", // amber-500
-                years: {
-                    113: { rank: 5, deaths: 10663, rate: 45.5, stdRate: 20.2, medianAge: 79.0 },
-                    112: { rank: 5, deaths: 11625, rate: 49.8, stdRate: 22.8, medianAge: 79.0 },
-                    111: { rank: 6, deaths: 12289, rate: 52.7, stdRate: 24.7, medianAge: 79.0 },
-                    110: { rank: 5, deaths: 11450, rate: 48.8, stdRate: 23.8, medianAge: 79.0 },
-                    109: { rank: 5, deaths: 10311, rate: 43.7, stdRate: 22.0, medianAge: 79.0 },
-                    108: { rank: 5, deaths: 9996, rate: 42.4, stdRate: 22.3, medianAge: 78.0 },
-                    107: { rank: 5, deaths: 9813, rate: 41.6, stdRate: 22.6, medianAge: 78.0 },
-                    106: { rank: 5, deaths: 10306, rate: 43.8, stdRate: 24.6, medianAge: 78.0 },
-                    105: { rank: 5, deaths: 10426, rate: 44.3, stdRate: 25.7, medianAge: 77.0 }
-                }
-            },
-            "高血壓性疾病": {
-                id: "hypertension",
-                code: "I10-I15",
-                name: "高血壓性疾病",
-                color: "rgba(236, 72, 153, 1)", // pink-500
-                years: {
-                    113: { rank: 6, deaths: 8928, rate: 38.1, stdRate: 16.0, medianAge: 83.0 },
-                    112: { rank: 7, deaths: 8930, rate: 38.3, stdRate: 16.5, medianAge: 83.0 },
-                    111: { rank: 7, deaths: 8720, rate: 37.4, stdRate: 16.3, medianAge: 84.0 },
-                    110: { rank: 6, deaths: 7886, rate: 33.6, stdRate: 15.2, medianAge: 84.0 },
-                    109: { rank: 7, deaths: 6706, rate: 28.4, stdRate: 13.4, medianAge: 83.0 },
-                    108: { rank: 8, deaths: 6255, rate: 26.5, stdRate: 12.9, medianAge: 83.0 },
-                    107: { rank: 8, deaths: 6067, rate: 25.7, stdRate: 13.0, medianAge: 83.0 },
-                    106: { rank: 8, deaths: 6149, rate: 26.1, stdRate: 13.6, medianAge: 83.0 },
-                    105: { rank: 8, deaths: 5956, rate: 25.3, stdRate: 13.8, medianAge: 82.0 }
-                }
-            },
-            "事故傷害": {
-                id: "accidents",
-                code: "V01-X59,Y85-Y86",
-                name: "事故傷害",
-                color: "rgba(20, 184, 166, 1)", // teal-500
-                years: {
-                    113: { rank: 7, deaths: 6924, rate: 29.6, stdRate: 19.2, medianAge: 66.0 },
-                    112: { rank: 8, deaths: 7063, rate: 30.3, stdRate: 20.0, medianAge: 66.0 },
-                    111: { rank: 8, deaths: 6953, rate: 29.8, stdRate: 20.0, medianAge: 65.0 },
-                    110: { rank: 7, deaths: 6775, rate: 28.9, stdRate: 20.0, medianAge: 64.0 },
-                    109: { rank: 6, deaths: 6767, rate: 28.7, stdRate: 20.3, medianAge: 64.0 },
-                    108: { rank: 6, deaths: 6640, rate: 28.1, stdRate: 20.0, medianAge: 63.0 },
-                    107: { rank: 6, deaths: 6846, rate: 29.0, stdRate: 21.1, medianAge: 62.0 },
-                    106: { rank: 6, deaths: 6965, rate: 29.6, stdRate: 21.9, medianAge: 62.0 },
-                    105: { rank: 7, deaths: 7206, rate: 30.6, stdRate: 23.1, medianAge: 60.0 }
-                }
-            },
-            "慢性下呼吸道疾病": {
-                id: "copd",
-                code: "J40-J47",
-                name: "慢性下呼吸道疾病",
-                color: "rgba(99, 102, 241, 1)", // indigo-500
-                years: {
-                    113: { rank: 8, deaths: 6193, rate: 26.5, stdRate: 10.7, medianAge: 83.0 },
-                    112: { rank: 9, deaths: 6164, rate: 26.4, stdRate: 11.1, medianAge: 84.0 },
-                    111: { rank: 9, deaths: 6494, rate: 27.8, stdRate: 11.8, medianAge: 84.0 },
-                    110: { rank: 8, deaths: 6238, rate: 26.6, stdRate: 11.7, medianAge: 84.0 },
-                    109: { rank: 8, deaths: 5657, rate: 24.0, stdRate: 11.0, medianAge: 84.0 },
-                    108: { rank: 7, deaths: 6301, rate: 26.7, stdRate: 12.6, medianAge: 84.0 },
-                    107: { rank: 7, deaths: 6719, rate: 28.5, stdRate: 13.9, medianAge: 84.0 },
-                    106: { rank: 7, deaths: 6844, rate: 29.1, stdRate: 14.5, medianAge: 84.0 },
-                    105: { rank: 6, deaths: 7420, rate: 31.6, stdRate: 16.5, medianAge: 84.0 }
-                }
-            },
-            "腎炎腎病症候群及腎病變": {
-                id: "nephritis",
-                code: "N00-N07,N17-N19,N25-N27",
-                name: "腎炎、腎病症候群及腎病變",
-                color: "rgba(59, 130, 246, 1)", // blue-500
-                years: {
-                    113: { rank: 9, deaths: 5679, rate: 24.3, stdRate: 10.4, medianAge: 81.0 },
-                    112: { rank: 10, deaths: 5814, rate: 24.9, stdRate: 11.1, medianAge: 81.0 },
-                    111: { rank: 10, deaths: 5813, rate: 24.9, stdRate: 11.3, medianAge: 81.0 },
-                    110: { rank: 9, deaths: 5470, rate: 23.3, stdRate: 10.9, medianAge: 81.0 },
-                    109: { rank: 9, deaths: 5096, rate: 21.6, stdRate: 10.5, medianAge: 81.0 },
-                    108: { rank: 9, deaths: 5049, rate: 21.4, stdRate: 10.7, medianAge: 81.0 },
-                    107: { rank: 9, deaths: 4811, rate: 20.4, stdRate: 10.7, medianAge: 80.0 },
-                    106: { rank: 10, deaths: 4687, rate: 19.9, stdRate: 10.8, medianAge: 80.0 },
-                    105: { rank: 10, deaths: 4552, rate: 19.4, stdRate: 10.8, medianAge: 80.0 }
-                }
-            },
-            "蓄意自我傷害": {
-                id: "suicide",
-                code: "X60-X84,Y87.0",
-                name: "蓄意自我傷害 (自殺)",
-                color: "rgba(107, 114, 128, 1)", // gray-500
-                years: {
-                    113: { rank: 10, deaths: 4062, rate: 17.4, stdRate: 13.4, medianAge: 52.0 },
-                    112: { rank: 11, deaths: 3898, rate: 16.7, stdRate: 12.7, medianAge: 53.0 },
-                    111: { rank: 12, deaths: 3787, rate: 16.2, stdRate: 12.3, medianAge: 53.0 },
-                    110: { rank: 11, deaths: 3585, rate: 15.3, stdRate: 11.6, medianAge: 53.0 },
-                    109: { rank: 11, deaths: 3656, rate: 15.5, stdRate: 11.8, medianAge: 52.0 },
-                    108: { rank: 11, deaths: 3864, rate: 16.4, stdRate: 12.6, medianAge: 51.0 },
-                    107: { rank: 11, deaths: 3865, rate: 16.4, stdRate: 12.5, medianAge: 52.0 },
-                    106: { rank: 11, deaths: 3871, rate: 16.4, stdRate: 12.5, medianAge: 52.0 },
-                    105: { rank: 11, deaths: 3765, rate: 16.0, stdRate: 12.3, medianAge: 52.0 }
-                }
-            },
-            "嚴重特殊傳染性肺炎": {
-                id: "covid",
-                code: "COVID-19",
-                name: "嚴重特殊傳染性肺炎",
-                color: "rgba(217, 70, 239, 1)", // fuchsia-500
-                years: {
-                    113: { rank: null, deaths: 0, rate: 0, stdRate: 0, medianAge: null },
-                    112: { rank: 6, deaths: 8962, rate: 38.4, stdRate: 17.0, medianAge: 83.0 },
-                    111: { rank: 3, deaths: 14667, rate: 62.9, stdRate: 28.0, medianAge: 82.0 },
-                    110: { rank: null, deaths: 0, rate: 0, stdRate: 0, medianAge: null },
-                    109: { rank: null, deaths: 0, rate: 0, stdRate: 0, medianAge: null },
-                    108: { rank: null, deaths: 0, rate: 0, stdRate: 0, medianAge: null },
-                    107: { rank: null, deaths: 0, rate: 0, stdRate: 0, medianAge: null },
-                    106: { rank: null, deaths: 0, rate: 0, stdRate: 0, medianAge: null },
-                    105: { rank: null, deaths: 0, rate: 0, stdRate: 0, medianAge: null }
-                }
-            },
-            "慢性肝病及肝硬化": {
-                id: "liver",
-                code: "K70,K73-K74",
-                name: "慢性肝病及肝硬化",
-                color: "rgba(22, 163, 74, 1)", // green-600
-                years: {
-                    113: { rank: null, deaths: 0, rate: 0, stdRate: 0, medianAge: null },
-                    112: { rank: null, deaths: 0, rate: 0, stdRate: 0, medianAge: null },
-                    111: { rank: null, deaths: 0, rate: 0, stdRate: 0, medianAge: null },
-                    110: { rank: 10, deaths: 4065, rate: 17.3, stdRate: 9.2, medianAge: 61.0 },
-                    109: { rank: 10, deaths: 3964, rate: 16.8, stdRate: 9.4, medianAge: 61.0 },
-                    108: { rank: 10, deaths: 4240, rate: 18.0, stdRate: 10.4, medianAge: 61.0 },
-                    107: { rank: 10, deaths: 4315, rate: 18.3, stdRate: 11.0, medianAge: 61.0 },
-                    106: { rank: 10, deaths: 4554.0, rate: 12.6, stdRate: 11.9, medianAge: 60.0 },
-                    105: { rank: 10, deaths: 4738, rate: 20.1, stdRate: 13.1, medianAge: 60.0 }
-                }
-            }
-        };
+      <!-- Mobile Dropdown Navigation -->
+      <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 p-4 space-y-2">
+        <button onclick="switchTab('dashboard'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium bg-brand-500 text-white">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>趨勢與指標看板</span>
+        </button>
+        <button onclick="switchTab('ai-chat'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>AI 智慧健康專家</span>
+        </button>
+        <button onclick="switchTab('death-analysis'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>死因與高齡化關聯</span>
+        </button>
+        <button onclick="switchTab('raw-data'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300">
+          <i data-lucide="table-properties" class="w-4 h-4"></i>
+          <span>完整推估數據表</span>
+        </button>
+        <button onclick="toggleDarkMode()" class="w-full flex items-center justify-between px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs">
+          <span>深色模式</span>
+          <i data-lucide="moon" class="w-4 h-4 text-indigo-400"></i>
+        </button>
+      </div>
 
-        // Aggregated Ten Major Causes Totals
-        const totalData = {
-            113: { deaths: 201383, rate: 860.2, stdRate: 410.3, medianAge: 77.0, adYear: 2024 },
-            112: { deaths: 205575, rate: 880.7, stdRate: 429.6, medianAge: 77.0, adYear: 2023 },
-            111: { deaths: 208438, rate: 893.8, stdRate: 443.9, medianAge: 78.0, adYear: 2022 },
-            110: { deaths: 184172, rate: 784.8, stdRate: 405.5, medianAge: 77.0, adYear: 2021 },
-            109: { deaths: 173067, rate: 733.9, stdRate: 390.8, medianAge: 77.0, adYear: 2020 },
-            108: { deaths: 175424, rate: 743.4, stdRate: 408.2, medianAge: 77.0, adYear: 2019 },
-            107: { deaths: 172859, rate: 733.1, stdRate: 415.0, medianAge: 77.0, adYear: 2018 },
-            106: { deaths: 171857, rate: 729.6, stdRate: 424.3, medianAge: 77.0, adYear: 2017 },
-            105: { deaths: 172418, rate: 733.2, stdRate: 439.4, medianAge: 77.0, adYear: 2016 }
-        };
+      <!-- App View Container (Scrollable) -->
+      <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+        
+        <!-- Toast message container -->
+        <div id="toast-container" class="fixed top-4 right-4 z-50 pointer-events-none"></div>
 
-        // Dementia Population Projection Dataset
-        const dementiaData = [
-            { year: "110年12月底", totalPop: "23,375", mci: "11.3", elderlyDementia: "300.8", rate: "7.64%", totalDementia: "312.2", pct: "1.34%" },
-            { year: "115年", totalPop: "23,404", mci: "11.7", elderlyDementia: "361.3", rate: "7.41%", totalDementia: "373.0", pct: "1.59%" },
-            { year: "120年", totalPop: "23,140", mci: "11.5", elderlyDementia: "445.1", rate: "7.77%", totalDementia: "456.6", pct: "1.97%" },
-            { year: "125年", totalPop: "22,693", mci: "11.1", elderlyDementia: "542.2", rate: "8.52%", totalDementia: "553.4", pct: "2.44%" },
-            { year: "130年", totalPop: "22,024", mci: "10.8", elderlyDementia: "649.4", rate: "9.51%", totalDementia: "660.1", pct: "3.00%" },
-            { year: "135年", totalPop: "21,162", mci: "9.9", elderlyDementia: "740.2", rate: "10.15%", totalDementia: "750.1", pct: "3.54%" },
-            { year: "140年", totalPop: "20,157", mci: "8.9", elderlyDementia: "792.0", rate: "10.67%", totalDementia: "801.0", pct: "3.97%" },
-            { year: "145年", totalPop: "19,056", mci: "8.0", elderlyDementia: "823.0", rate: "11.22%", totalDementia: "831.0", pct: "4.36%" },
-            { year: "150年", totalPop: "17,911", mci: "7.2", elderlyDementia: "843.7", rate: "11.65%", totalDementia: "850.9", pct: "4.75%" },
-            { year: "155年", totalPop: "16,747", mci: "6.4", elderlyDementia: "849.8", rate: "12.16%", totalDementia: "856.2", pct: "5.11%" },
-            { year: "159年", totalPop: "15,814", mci: "6.0", elderlyDementia: "839.2", rate: "12.76%", totalDementia: "845.2", pct: "5.34%" }
-        ];
+        <!-- TAB: DASHBOARD -->
+        <div id="tab-dashboard" class="space-y-6 tab-content block">
+          
+          <!-- Quick Interactive Year Controller -->
+          <div class="bg-gradient-to-r from-brand-600 to-indigo-700 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div class="space-y-1">
+                <h3 class="text-2xl font-bold">全台失智症人口數據預估</h3>
+                <p class="text-brand-100 text-sm">拖曳下方滑桿或點選年度，數據將自動重組（所有單位皆統一折算為「萬人」）。</p>
+              </div>
+              
+              <!-- Quick Year Selector -->
+              <div class="flex flex-wrap gap-2">
+                <button onclick="selectYear('110')" class="year-btn px-3 py-1.5 bg-white text-brand-700 text-xs font-bold rounded-lg transition-all shadow hover:scale-105">110</button>
+                <button onclick="selectYear('120')" class="year-btn px-3 py-1.5 bg-white/10 text-white text-xs font-bold rounded-lg transition-all hover:bg-white/20 hover:scale-105">120</button>
+                <button onclick="selectYear('130')" class="year-btn px-3 py-1.5 bg-white/10 text-white text-xs font-bold rounded-lg transition-all hover:bg-white/20 hover:scale-105">130</button>
+                <button onclick="selectYear('155')" class="year-btn px-3 py-1.5 bg-white/10 text-white text-xs font-bold rounded-lg transition-all hover:bg-white/20 hover:scale-105">155</button>
+                <button onclick="selectYear('159')" class="year-btn px-3 py-1.5 bg-white/10 text-white text-xs font-bold rounded-lg transition-all hover:bg-white/20 hover:scale-105">159</button>
+              </div>
+            </div>
 
-        // State management
-        let currentYear = 113;
-        let playInterval = null;
-        let visibleDiseases = Object.keys(rawData);
-        let activeTab = "trends";
-        let activeTableSource = "deaths";
+            <!-- Timeline Slider -->
+            <div class="mt-6 relative z-10">
+              <div class="flex items-center justify-between text-xs font-bold text-brand-100 mb-2 px-1">
+                <span>110</span>
+                <span>115</span>
+                <span>120</span>
+                <span>125</span>
+                <span>130</span>
+                <span>135</span>
+                <span>140</span>
+                <span>145</span>
+                <span>150</span>
+                <span>155</span>
+                <span>159</span>
+              </div>
+              <input type="range" id="yearSlider" min="110" max="159" value="110" step="1" 
+                class="w-full h-2.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white focus:outline-none"
+                oninput="syncSlider(this.value)">
+              <div class="text-center mt-4">
+                <span class="inline-block bg-white text-brand-800 font-bold px-4 py-1.5 rounded-full text-base shadow-lg">
+                  當前選定預估年度：民國 <span id="display-selected-year" class="text-rose-600 font-extrabold">110</span> 年
+                </span>
+              </div>
+            </div>
+          </div>
 
-        // Chart Objects
-        let trendChartObj = null;
-        let barChartObj = null;
-        let cagrChartObj = null;
-
-        // Gemini API Config
-        const apiKey = ""; 
-
-        // 2. Main Entrypoint
-        window.addEventListener('DOMContentLoaded', () => {
-            initApp();
-        });
-
-        function initApp() {
-            createDiseaseCheckboxes();
-            updateDashboard();
-            initCagrChart();
-            buildSuggestionChips();
-
-            // Set default toggle
-            const themeVal = localStorage.getItem('theme') || 'dark';
-            if (themeVal === 'light') {
-                document.documentElement.classList.remove('dark');
-                document.getElementById('theme-toggle').checked = false;
-            } else {
-                document.documentElement.classList.add('dark');
-                document.getElementById('theme-toggle').checked = true;
-            }
-
-            // Register Timeline Slider
-            document.getElementById('year-slider').addEventListener('input', (e) => {
-                changeYear(parseInt(e.target.value));
-            });
-
-            // Navigation Year Arrows
-            document.getElementById('btn-prev').addEventListener('click', () => {
-                let prev = currentYear - 1;
-                if (prev < 105) prev = 113;
-                changeYear(prev);
-            });
-            document.getElementById('btn-next').addEventListener('click', () => {
-                let next = currentYear + 1;
-                if (next > 113) next = 105;
-                changeYear(next);
-            });
-
-            document.getElementById('btn-play').addEventListener('click', togglePlay);
-
-            // Register table filters
-            document.getElementById('table-search').addEventListener('input', renderTable);
-            document.getElementById('chat-input').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') sendChatMessage();
-            });
-
-            // Initial Welcoming Dialogues
-            clearChat();
-        }
-
-        // 3. Tab Navigation Engine (Optimized for 4 Sidebar options as shown in Image 2)
-        function switchTab(tabId) {
-            activeTab = tabId;
-            const tabs = ['trends', 'ai', 'aging', 'database'];
+          <!-- KPI Cards Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
-            tabs.forEach(t => {
-                const el = document.getElementById(`tab-${t}`);
-                const nav = document.getElementById(`nav-${t}`);
-                if (t === tabId) {
-                    el.classList.remove('hidden');
-                    nav.className = "w-full flex items-center gap-3 px-4 py-3 text-sm font-bold bg-teal-500/10 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 rounded-xl transition-all border border-teal-500/20";
-                } else {
-                    el.classList.add('hidden');
-                    nav.className = "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-xl transition-all border border-transparent";
-                }
-            });
-
-            // Handle lazy Chart resizing inside hidden container
-            if (tabId === 'trends') {
-                setTimeout(() => {
-                    if (trendChartObj) trendChartObj.resize();
-                    if (barChartObj) barChartObj.resize();
-                    if (cagrChartObj) cagrChartObj.resize();
-                }, 50);
-            }
-        }
-
-        // Toggle Dark/Light Mode
-        function toggleTheme() {
-            const html = document.documentElement;
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        // Slider Timeline Autoplay
-        function togglePlay() {
-            const btn = document.getElementById('btn-play');
-            const playText = document.getElementById('play-text');
-            const playIcon = document.getElementById('play-icon');
-
-            if (playInterval) {
-                clearInterval(playInterval);
-                playInterval = null;
-                btn.className = "flex items-center gap-2 px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-semibold rounded-xl shadow-md shadow-teal-500/10 transition-all text-xs";
-                playText.innerText = "自動巡航播放";
-                playIcon.innerHTML = `<svg id="play-icon" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>`;
-            } else {
-                btn.className = "flex items-center gap-2 px-4 py-2 bg-rose-500 hover:bg-rose-400 text-white font-semibold rounded-xl shadow-md shadow-rose-500/10 transition-all text-xs";
-                playText.innerText = "暫停巡航";
-                playIcon.innerHTML = `<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>`;
-                
-                playInterval = setInterval(() => {
-                    let nextYear = currentYear + 1;
-                    if (nextYear > 113) nextYear = 105;
-                    changeYear(nextYear);
-                }, 2200);
-            }
-        }
-
-        // Change Active Year
-        function changeYear(year) {
-            currentYear = year;
-            document.getElementById('year-slider').value = year;
-            document.getElementById('active-year-badge').innerText = `民國 ${year} 年度`;
-            
-            // FIXED: Added defensive guard to consult-roc-year to prevent Null elements crashing Year navigation
-            const consultRocEl = document.getElementById('consult-roc-year');
-            if (consultRocEl) {
-                consultRocEl.innerText = year;
-            }
-            
-            const metrics = totalData[year];
-            if (metrics) {
-                document.getElementById('gregorian-badge').innerText = `西元 ${metrics.adYear} 年`;
-            }
-
-            // Highlighting active tick label and dots while preserving vertical line-sitting alignment
-            const years = [105, 106, 107, 108, 109, 110, 111, 112, 113];
-            years.forEach((y) => {
-                const dot = document.getElementById(`dot-${y}`);
-                const label = document.getElementById(`label-${y}`);
-                
-                if (dot) {
-                    if (y === year) {
-                        // Highlight State for Chosen Year's Dot on the line (Teal Glowing Dot replacing white dot)
-                        dot.className = "w-3 h-3 rounded-full bg-teal-400 border-2 border-teal-200 scale-125 shadow-[0_0_10px_rgba(45,212,191,0.8)] transition-all duration-200 z-10 animate-pulse";
-                    } else {
-                        // Standard State for Inactive Years (Clean White Dot on the line)
-                        dot.className = "w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-950 scale-100 transition-all duration-200";
-                    }
-                }
-
-                // Toggle active classes selectively using classList, preserving 'absolute left-[X%] -translate-x-1/2' alignment
-                if (label) {
-                    if (y === year) {
-                        label.classList.remove('text-slate-500', 'font-semibold', 'scale-100');
-                        label.classList.add('text-teal-400', 'font-black', 'scale-110', 'z-10');
-                    } else {
-                        label.classList.remove('text-teal-400', 'font-black', 'scale-110', 'z-10');
-                        label.classList.add('text-slate-500', 'font-semibold', 'scale-100');
-                    }
-                }
-            });
-
-            updateDashboard();
-            buildSuggestionChips();
-        }
-
-        // Master UI Sync
-        function updateDashboard() {
-            const metrics = totalData[currentYear];
-            document.getElementById('quick-sum-deaths').innerText = metrics.deaths.toLocaleString();
-
-            // FIXED: Target table-tab-title instead of table-title to reflect chosen metrics year
-            const tableTitle = document.getElementById('table-tab-title');
-            if (tableTitle) {
-                tableTitle.innerText = activeTableSource === 'deaths' 
-                    ? `十大死因多維度統計明細數據庫 (民國 ${currentYear} 年 / 西元 ${metrics.adYear} 年)`
-                    : `臺灣失智症人口全國成長推估數據庫`;
-            }
-
-            const activeTop10 = getSortedTop10(currentYear);
-            renderKPICards(activeTop10);
-            renderExecutiveInsight(activeTop10, metrics);
-            renderTrendChart();
-            renderBarChart(activeTop10);
-            renderTable();
-        }
-
-        // Extract Top 10 correctly
-        function getSortedTop10(year) {
-            const list = [];
-            for (const key in rawData) {
-                const disease = rawData[key];
-                const stats = disease.years[year];
-                if (stats && stats.rank !== null && stats.rank !== undefined) {
-                    list.push({
-                        key: key,
-                        code: disease.code,
-                        name: disease.name,
-                        color: disease.color,
-                        ...stats
-                    });
-                }
-            }
-            return list.sort((a, b) => a.rank - b.rank).slice(0, 10);
-        }
-
-        // 4. Render KPI Cards
-        function renderKPICards(top10) {
-            const grid = document.getElementById('kpi-grid');
-            grid.innerHTML = '';
-
-            top10.forEach((item) => {
-                const prevStats = rawData[item.key].years[currentYear - 1];
-                let yoyHTML = '';
-                
-                if (prevStats && prevStats.rate > 0) {
-                    const diff = item.rate - prevStats.rate;
-                    const pct = ((diff / prevStats.rate) * 100).toFixed(1);
-                    
-                    if (diff === 0) {
-                        yoyHTML = `<span class="inline-flex items-center text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-mono">0.0%</span>`;
-                    } else if (diff > 0) {
-                        yoyHTML = `<span class="inline-flex items-center text-[10px] bg-rose-500/10 text-rose-500 border border-rose-500/20 px-1 rounded font-mono">+${pct}% ▲</span>`;
-                    } else {
-                        yoyHTML = `<span class="inline-flex items-center text-[10px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-1 rounded font-mono">${pct}% ▼</span>`;
-                    }
-                } else {
-                    yoyHTML = `<span class="text-[10px] text-slate-400">-</span>`;
-                }
-
-                let rankBadge = 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400';
-                if (item.rank === 1) rankBadge = 'bg-rose-500 text-white font-bold';
-                if (item.rank === 2) rankBadge = 'bg-amber-500 text-white font-bold';
-                if (item.rank === 3) rankBadge = 'bg-teal-500 text-white font-bold';
-
-                const card = document.createElement('div');
-                card.className = "bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-850 p-4 rounded-xl relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-all group";
-                card.innerHTML = `
-                    <div class="absolute left-0 top-0 bottom-0 w-1.5" style="background-color: ${item.color}"></div>
-                    <div class="pl-2 space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${rankBadge}">Rank ${item.rank}</span>
-                            ${yoyHTML}
-                        </div>
-                        <h4 class="text-xs md:text-sm font-black text-slate-900 dark:text-slate-100 group-hover:text-teal-400 transition-colors line-clamp-2 leading-relaxed">
-                            ${item.name}
-                        </h4>
-                        <div class="space-y-1 text-xs border-t border-slate-100 dark:border-slate-800/80 pt-2">
-                            <div class="flex justify-between">
-                                <span class="text-[10px] text-slate-400">死亡人數</span>
-                                <span class="font-bold text-slate-700 dark:text-slate-200">${item.deaths.toLocaleString()}人</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-[10px] text-slate-400">死亡率</span>
-                                <span class="font-black text-teal-500">${item.rate}</span>
-                            </div>
-                            <div class="flex justify-between text-[10px] text-slate-400 pt-1">
-                                <span>標準化: <strong class="text-indigo-500">${item.stdRate}</strong></span>
-                                <span>中位數: <strong>${item.medianAge}歲</strong></span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // 5. Generate AI Summary Insights
-        function renderExecutiveInsight(top10, total) {
-            const container = document.getElementById('ai-insight');
-            let worstYoY = { name: "無資料", val: -999 };
-            
-            top10.forEach(item => {
-                const prev = rawData[item.key].years[currentYear - 1];
-                if (prev && prev.rate > 0) {
-                    const pct = ((item.rate - prev.rate) / prev.rate) * 100;
-                    if (pct > worstYoY.val) {
-                        worstYoY = { name: item.name, val: pct };
-                    }
-                }
-            });
-
-            container.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="space-y-1">
-                        <div class="text-[10px] font-bold text-slate-400">高齡趨勢分析</div>
-                        <p class="text-slate-600 dark:text-slate-300">
-                            本年度死亡年齡中位數落在 <strong class="text-teal-500">${total.medianAge} 歲</strong>，高階老齡共病防治及安寧緩和照護需求急劇成長。
-                        </p>
-                    </div>
-                    <div class="space-y-1">
-                        <div class="text-[10px] font-bold text-slate-400">當期重點威脅</div>
-                        <p class="text-slate-600 dark:text-slate-300">
-                            死因數據顯示，本年度死亡率上升最劇烈之死因為 <strong class="text-rose-500">${worstYoY.name}</strong> 
-                            ${worstYoY.val > -999 ? `（較前年同期增加 <span class="font-bold text-rose-400">${worstYoY.val.toFixed(1)}%</span>）` : ""}。
-                        </p>
-                    </div>
-                    <div class="space-y-1">
-                        <div class="text-[10px] font-bold text-slate-400">政策聚焦建議</div>
-                        <p class="text-slate-600 dark:text-slate-300">
-                            對應失智人口之長期攀升（民國 120 年推估高達 45.6 萬人），建立跨領域高齡心智共融社區與照護體系極具迫切性。
-                        </p>
-                    </div>
+            <!-- KPI 1: Total Dementia Population -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden transition-all duration-300 hover:shadow-md">
+              <div class="flex justify-between items-start">
+                <div class="space-y-2">
+                  <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">預估失智總人口數</span>
+                  <div class="flex items-baseline space-x-1">
+                    <span class="text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400" id="kpi-total-dementia">31.22 萬</span>
+                    <span class="text-xs text-slate-400 font-semibold">人</span>
+                  </div>
                 </div>
-            `;
-        }
+                <div class="p-3 bg-brand-50 dark:bg-brand-950/50 rounded-xl text-brand-600 dark:text-brand-400">
+                  <i data-lucide="users" class="w-6 h-6"></i>
+                </div>
+              </div>
+              <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                <span class="text-slate-500">對比110年底</span>
+                <span class="font-bold flex items-center text-emerald-600" id="kpi-total-change">
+                  <i data-lucide="trending-up" class="w-3.5 h-3.5 mr-1"></i>0.0%
+                </span>
+              </div>
+            </div>
 
-        // 6. Draw Charts using Chart.js
-        function createDiseaseCheckboxes() {
-            const container = document.getElementById('disease-toggles');
-            container.innerHTML = '';
+            <!-- KPI 2: % of National Population -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden transition-all duration-300 hover:shadow-md">
+              <div class="flex justify-between items-start">
+                <div class="space-y-2">
+                  <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">佔全國總人口比</span>
+                  <div class="flex items-baseline space-x-1">
+                    <span class="text-3xl font-extrabold tracking-tight text-amber-500" id="kpi-percent-total">1.34%</span>
+                  </div>
+                </div>
+                <div class="p-3 bg-amber-50 dark:bg-amber-950/50 rounded-xl text-amber-500">
+                  <i data-lucide="percent" class="w-6 h-6"></i>
+                </div>
+              </div>
+              <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                <span class="text-slate-500" id="kpi-ratio-desc">每 74 人中有 1 位</span>
+                <span class="text-slate-400" id="kpi-national-total">全國: 2337.5 萬人</span>
+              </div>
+            </div>
 
-            Object.keys(rawData).forEach((key) => {
-                const item = rawData[key];
-                const label = document.createElement('label');
-                label.className = "flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 select-none transition-colors";
-                label.innerHTML = `
-                    <input type="checkbox" value="${key}" checked class="rounded border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-teal-500 focus:ring-0 w-3 h-3">
-                    <span class="w-1.5 h-1.5 rounded-full inline-block" style="background-color: ${item.color}"></span>
-                    <span class="text-slate-600 dark:text-slate-300 text-xs">${item.name}</span>
-                `;
-                
-                label.querySelector('input').addEventListener('change', (e) => {
-                    if (e.target.checked) {
-                        visibleDiseases.push(key);
-                    } else {
-                        visibleDiseases = visibleDiseases.filter(d => d !== key);
-                    }
-                    renderTrendChart();
-                });
+            <!-- KPI 3: Over 65 Seniors & Prevalence -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden transition-all duration-300 hover:shadow-md">
+              <div class="flex justify-between items-start">
+                <div class="space-y-2">
+                  <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">65歲以上失智人口 (盛行率)</span>
+                  <div class="flex items-baseline space-x-1">
+                    <span class="text-2xl font-extrabold tracking-tight" id="kpi-65plus-total">30.08 萬</span>
+                    <span class="text-xs font-semibold text-rose-500 ml-1" id="kpi-65plus-prev">(7.64%)</span>
+                  </div>
+                </div>
+                <div class="p-3 bg-rose-50 dark:bg-rose-950/50 rounded-xl text-rose-500">
+                  <i data-lucide="user-check" class="w-6 h-6"></i>
+                </div>
+              </div>
+              <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+                <span>每 13 位老人有 1 位失智者</span>
+                <span class="text-rose-500 font-bold" id="kpi-65plus-ratio">佔總失智 96.4%</span>
+              </div>
+            </div>
 
-                container.appendChild(label);
-            });
-        }
+            <!-- KPI 4: 45-64 Early Onset -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden transition-all duration-300 hover:shadow-md">
+              <div class="flex justify-between items-start">
+                <div class="space-y-2">
+                  <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">45-64歲輕壯年失智人口</span>
+                  <div class="flex items-baseline space-x-1">
+                    <span class="text-3xl font-extrabold tracking-tight text-teal-600 dark:text-teal-400" id="kpi-younger">1.13 萬</span>
+                    <span class="text-xs text-slate-400 font-semibold">人</span>
+                  </div>
+                </div>
+                <div class="p-3 bg-teal-50 dark:bg-teal-950/50 rounded-xl text-teal-600 dark:text-teal-400">
+                  <i data-lucide="user" class="w-6 h-6"></i>
+                </div>
+              </div>
+              <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                <span class="text-slate-500">盛行率 (挪威2019研究)</span>
+                <span class="text-teal-600 font-bold">1.60 ‰ (千分之1.6)</span>
+              </div>
+            </div>
 
-        function renderTrendChart() {
-            const years = [105, 106, 107, 108, 109, 110, 111, 112, 113];
-            const datasets = [];
+          </div>
 
-            visibleDiseases.forEach((key) => {
-                const disease = rawData[key];
-                const dataPoints = [];
-
-                years.forEach((y) => {
-                    const val = disease.years[y];
-                    dataPoints.push(val ? val.deaths : null); // CHANGED to val.deaths
-                });
-
-                const isSelected = getSortedTop10(currentYear).some(item => item.key === key);
-
-                datasets.push({
-                    label: disease.name,
-                    data: dataPoints,
-                    borderColor: disease.color,
-                    backgroundColor: disease.color.replace('1)', '0.06)'),
-                    borderWidth: isSelected ? 2.5 : 1.2,
-                    tension: 0.15,
-                    pointRadius: years.map(y => y === currentYear ? 6 : 1),
-                    pointHoverRadius: 8,
-                    pointBackgroundColor: years.map(y => y === currentYear ? '#2dd4bf' : disease.color),
-                    pointBorderColor: years.map(y => y === currentYear ? '#ffffff' : 'transparent'),
-                    pointBorderWidth: years.map(y => y === currentYear ? 2 : 0)
-                });
-            });
-
-            if (trendChartObj) {
-                trendChartObj.destroy();
-            }
-
-            const ctx = document.getElementById('trendChart').getContext('2d');
-            trendChartObj = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: years.map(y => `${y}年`),
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                            padding: 10,
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.dataset.label}: ${context.raw.toLocaleString()} 人`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: { grid: { color: 'rgba(148, 163, 184, 0.08)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-                        y: { grid: { color: 'rgba(148, 163, 184, 0.08)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
-                    }
-                }
-            });
-        }
-
-        function renderBarChart(top10) {
-            const labels = top10.map(item => item.name);
-            const dataValues = top10.map(item => item.rate);
-            const bgColors = top10.map(item => item.color.replace('1)', '0.8)'));
-
-            if (barChartObj) {
-                barChartObj.destroy();
-            }
-
-            const ctx = document.getElementById('barChart').getContext('2d');
-            barChartObj = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: dataValues,
-                        backgroundColor: bgColors,
-                        borderWidth: 0,
-                        borderRadius: 3
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', padding: 10 }
-                    },
-                    scales: {
-                        x: { grid: { color: 'rgba(148, 163, 184, 0.08)' }, ticks: { color: '#94a3b8', font: { size: 9 } } },
-                        y: { grid: { display: false }, ticks: { color: '#475569', font: { size: 9, weight: 'bold' } } }
-                    }
-                }
-            });
-        }
-
-        function initCagrChart() {
-            const keys = Object.keys(rawData).filter(k => k !== "嚴重特殊傳染性肺炎");
-            const cagrData = [];
-
-            keys.forEach((key) => {
-                const item = rawData[key];
-                const startVal = item.years[105]?.rate;
-                const endVal = item.years[113]?.rate;
-
-                if (startVal && endVal) {
-                    const cagr = (Math.pow(endVal / startVal, 1/8) - 1) * 100;
-                    cagrData.push({
-                        name: item.name,
-                        cagr: parseFloat(cagr.toFixed(2)),
-                        color: item.color
-                    });
-                }
-            });
-
-            cagrData.sort((a, b) => b.cagr - a.cagr);
-
-            const ctx = document.getElementById('cagrChart').getContext('2d');
-            cagrChartObj = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: cagrData.map(d => d.name),
-                    datasets: [{
-                        data: cagrData.map(d => d.cagr),
-                        backgroundColor: cagrData.map(d => d.cagr > 0 ? 'rgba(244, 63, 94, 0.8)' : 'rgba(16, 185, 129, 0.8)'),
-                        borderRadius: 3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', padding: 10 }
-                    },
-                    scales: {
-                        y: { grid: { color: 'rgba(148, 163, 184, 0.08)' }, ticks: { color: '#94a3b8', font: { size: 9 } } },
-                        x: { grid: { display: false }, ticks: { color: '#475569', font: { size: 9 } } }
-                    }
-                }
-            });
-        }
-
-        // ================= 7. AI SMART DIALOGUE MODULE =================
-
-        // Predefined suggested questions (matched with Tab 2 Suggestion Chips)
-        function buildSuggestionChips() {
-            const chipsBox = document.getElementById('chat-chips');
-            if (!chipsBox) return;
-            chipsBox.innerHTML = '';
+          <!-- Charts Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            const activeTop10 = getSortedTop10(currentYear);
-            const firstPlace = activeTop10[0]?.name || "惡性腫瘤";
-            const total = totalData[currentYear];
+            <!-- Chart 1: Trend Chart -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm lg:col-span-2 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-4">
+                <div class="space-y-1">
+                  <h4 class="font-bold text-slate-900 dark:text-white flex items-center">
+                    <i data-lucide="trending-up" class="w-4 h-4 text-brand-500 mr-2"></i>
+                    失智症人口成長趨勢與佔全國人口比例 (單位：萬人)
+                  </h4>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">條形代表失智症總人口（萬人），折線代表佔總人口比（％）</p>
+                </div>
+              </div>
+              <div class="relative w-full h-80">
+                <canvas id="trendChart"></canvas>
+              </div>
+            </div>
 
-            const suggestions = [
-                `針對該年首位死因【${firstPlace}】，應採取何種創新的早期篩檢與健保資源分配策略？`,
-                `死亡中位年齡達【${total.medianAge} 歲】，面對超高齡社會，有哪些具體的預防醫學政策建言？`,
-                `台灣失智症推估民國120年突破45萬人口，應如何啟動整合性的「高齡智慧照明與社區防禦網」？`,
-                `台灣與全球失智人口盛行率對比下，長期照護體系（長照 2.0/3.0）如何整合死因預防，以降低老齡疾病耗損？`
-            ];
+            <!-- Chart 2: Age Prevalence -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-4">
+                <div class="space-y-1">
+                  <h4 class="font-bold text-slate-900 dark:text-white flex items-center">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4 text-rose-500 mr-2"></i>
+                    台灣老人年齡分層失智症盛行率
+                  </h4>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">隨著年紀增加呈倍增趨勢</p>
+                </div>
+              </div>
+              <div class="relative w-full h-80">
+                <canvas id="ageChart"></canvas>
+              </div>
+            </div>
 
-            suggestions.forEach((text) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full text-left text-xs text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 hover:border-teal-500/40 dark:hover:border-teal-500/40 p-3 rounded-xl transition-all leading-relaxed font-medium";
-                btn.innerHTML = `⚡ ${text}`;
-                btn.onclick = () => {
-                    document.getElementById('chat-input').value = text;
-                    sendChatMessage();
-                };
-                chipsBox.appendChild(btn);
-            });
-        }
+          </div>
 
-        // Clear and Reset Chat Log
-        function clearChat() {
-            const log = document.getElementById('chat-log');
-            if (!log) return;
-            log.innerHTML = '';
+          <!-- CAGR Analysis Block & Demographic Explanation -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            const metrics = totalData[currentYear];
-            appendChatMessage("assistant", `
+            <!-- CAGR Chart -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <h4 class="font-bold text-slate-900 dark:text-white flex items-center">
+                    <i data-lucide="percent-circle" class="w-4 h-4 text-teal-500 mr-2"></i>
+                    失智人口階段年複合成長率 (CAGR)
+                  </h4>
+                  <span class="text-[10px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full dark:bg-teal-950/40 dark:text-teal-300 font-semibold">階段分析</span>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">失智人口在早期以 3.5%~4% 的高速增長，但隨後幾十年增長曲線開始減緩。</p>
+              </div>
+              <div class="relative w-full h-48">
+                <canvas id="cagrChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Why Negative CAGR Explanation -->
+            <div class="bg-indigo-50/50 dark:bg-slate-950 border border-indigo-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm lg:col-span-2 flex flex-col justify-between">
+              <div class="space-y-4 flex flex-col h-full justify-between">
                 <div class="space-y-4">
-                    <h3 class="text-sm font-black text-teal-500 flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-800 pb-2">
-                        <span>💬</span> AI 智慧健康決策助理 已就緒
-                    </h3>
-                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                        我已為您完整載入**民國 105 ~ 113 年主要死因統計資料**、以及**台灣失智症流行病學推估數據（至民國 159 年模型）**。
-                    </p>
-                    <div class="p-3 bg-slate-100 dark:bg-slate-850 rounded-lg text-slate-500 dark:text-slate-400 border border-slate-200/40 dark:border-slate-800">
-                        <strong class="text-xs text-teal-400">當前決策對象：民國 ${currentYear} 年 (西元 ${metrics.adYear} 年)</strong>
-                        <ul class="list-disc ml-4 mt-1.5 space-y-1">
-                            <li>十大死因總死亡人數：${metrics.deaths.toLocaleString()} 人</li>
-                            <li>死亡年齡中位數：${metrics.medianAge} 歲</li>
-                            <li>失智預估：此時期全國失智症盛行人口約佔總人口之 1.34% ~ 1.59%</li>
-                        </ul>
+                  <div class="flex items-center space-x-2 text-brand-600 dark:text-brand-400">
+                    <i data-lucide="help-circle" class="w-6 h-6"></i>
+                    <h4 class="text-lg font-bold">為什麼末期年複合成長率 (CAGR) 會呈現負成長（-0.32%）？</h4>
+                  </div>
+                  <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    這是一個非常關鍵的<strong>「人口結構分水嶺」</strong>現象。
+                    觀察數據可知，在民國 155 年時，失智總人口達到歷史最高峰的 <span class="font-bold text-rose-500">85.62 萬人</span>，然而到了民國 159 年，失智總人口卻略為下滑至 <span class="font-bold text-indigo-500">84.52 萬人</span>。其背後原因有二：
+                  </p>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                    <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-indigo-50 dark:border-slate-800">
+                      <span class="text-xs text-brand-600 font-bold block mb-1">原因 A：全國總人口急遽萎縮</span>
+                      <span class="text-xs text-slate-500">台灣總人口在 155 年至 159 年的僅僅 4 年內，因少子化斷崖式暴跌了 <strong>93.3 萬人</strong>（從 1674.7 萬收縮至 1581.4 萬），人口基底嚴重流失。</span>
                     </div>
-                    <p class="text-[11px] text-slate-400">
-                        請點擊左側「推薦問題」或於下方輸入框鍵入高層決策提問（如：高血壓長期攀升、肺癌精準醫療、長照共融設計）。
-                    </p>
-                </div>
-            `);
-        }
-
-        // Render message into chat scroll container
-        function appendChatMessage(sender, text) {
-            const log = document.getElementById('chat-log');
-            if (!log) return;
-            const wrapper = document.createElement('div');
-            wrapper.className = sender === "user" ? "flex justify-end w-full" : "flex justify-start w-full";
-            
-            const bubbleBg = sender === "user" 
-                ? "bg-teal-500 text-slate-950 font-semibold rounded-br-none" 
-                : "bg-slate-100 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700/60 rounded-bl-none";
-
-            wrapper.innerHTML = `
-                <div class="max-w-[85%] ${bubbleBg} px-4 py-3 rounded-2xl text-xs leading-relaxed shadow-sm">
-                    ${text}
-                </div>
-            `;
-            log.appendChild(wrapper);
-            log.scrollTop = log.scrollHeight;
-        }
-
-        // Markdown formatter to make output extremely clean
-        function formatMarkdown(text) {
-            let formatted = text.replace(/\*\*(.*?)\*\"/g, '<strong class="text-teal-500 dark:text-teal-400 font-black">$1</strong>');
-            formatted = formatted.replace(/\*\frac{(.*?)}{(.*?)}/g, '<strong class="text-teal-500 dark:text-teal-400 font-black">$1/$2</strong>');
-            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="text-teal-500 dark:text-teal-400 font-black">$1</strong>');
-            formatted = formatted.replace(/^\*\s(.*)$/gm, '<li class="ml-4 list-disc text-slate-600 dark:text-slate-300 my-1">$1</li>');
-            formatted = formatted.replace(/###\s(.*)$/gm, '<h3 class="text-xs font-bold text-teal-600 dark:text-teal-400 mt-3 mb-1 border-b border-slate-200 dark:border-slate-800/80 pb-1">$1</h3>');
-            formatted = formatted.replace(/\n/g, '<br>');
-            return formatted;
-        }
-
-        function showChatLoader() {
-            const log = document.getElementById('chat-log');
-            if (!log) return;
-            const loader = document.createElement('div');
-            loader.id = "chat-loader";
-            loader.className = "flex justify-start w-full";
-            loader.innerHTML = `
-                <div class="max-w-[80%] bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700/60 px-4 py-3 rounded-2xl rounded-bl-none shadow-sm flex items-center gap-3">
-                    <span class="flex h-2 w-2 relative">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
-                    </span>
-                    <p class="text-[11px] tracking-wide animate-pulse">決策健康助理正在彙整公衛大數據政策模型...</p>
-                </div>
-            `;
-            log.appendChild(loader);
-            log.scrollTop = log.scrollHeight;
-        }
-
-        function hideChatLoader() {
-            const el = document.getElementById('chat-loader');
-            if (el) el.remove();
-        }
-
-        // Send chat action trigger
-        async function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            if (!input) return;
-            const queryText = input.value.trim();
-            if (!queryText) return;
-
-            appendChatMessage("user", queryText);
-            input.value = '';
-            showChatLoader();
-
-            try {
-                const response = await callGeminiAPI(queryText);
-                hideChatLoader();
-                appendChatMessage("assistant", formatMarkdown(response));
-            } catch (err) {
-                hideChatLoader();
-                appendChatMessage("assistant", `<span class="text-rose-500 font-bold">⚠️ 系統提示：</span>目前無法與決策大腦連線，請確認網路環境或稍後重試。`);
-            }
-        }
-
-        // Gemini API caller with Exponential Backoff
-        async function callGeminiAPI(userQuery) {
-            const systemPrompt = `你是一位精通台灣公共衛生、高齡醫學與人口老化政策的頂級 AI 決策顧問。
-            請根據用戶的提問，綜合以下數據庫進行分析：
-            1. 台灣歷年十大死因（105-113年）：惡性腫瘤、心臟疾病、肺炎、腦血管疾病、糖尿病、高血壓性疾病（複合年成長率高達 +5.24%）等。
-            2. 台灣失智症人口推估：每30分鐘新增1位失智者，民國130年將突破66萬人（佔總人口 3%）。
-            請給予高階決策者（C-Level）精準、具體、具備政策執行價值的應對方案。使用繁體中文（台灣習慣用語與名詞如健保、長照等）回答，層次清晰、條理分明。`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] }
-            };
-
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            
-            let delay = 1000;
-            const maxRetries = 5;
-
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        return result.candidates?.[0]?.content?.parts?.[0]?.text || "抱歉，顧問目前未能生成應對方案，請稍後重試。";
-                    }
-                } catch (e) {}
-                
-                await new Promise(resolve => setTimeout(resolve, delay));
-                delay *= 2;
-            }
-            throw new Error("Gemini API connection timed out.");
-        }
-
-        // ================= 8. DYNAMIC DEMENTIA & AGING AI CONNECTORS =================
-
-        // Trigger AI Aging & Mortality Correlation Analysis
-        function triggerAiAgingAnalysis() {
-            switchTab('ai');
-            const inputField = document.getElementById('chat-input');
-            const targetPrompt = `請針對 105 到 113 年「臺灣歷年死因高齡化關聯指標」數據表進行深度 analysis。著重於肺炎死亡人數的激增、高血壓性疾病死亡數的成長、與癌症死亡中位年齡微幅推遲背後的公共衛生與老化政策挑戰意義。`;
-            if (inputField) {
-                inputField.value = targetPrompt;
-                sendChatMessage();
-            }
-        }
-
-        // Trigger AI Dementia海嘯諮詢
-        function triggerAiDementiaAnalysis() {
-            switchTab('ai');
-            const inputField = document.getElementById('chat-input');
-            const targetPrompt = `請針對「臺灣失智症人口長期推估 (110-159年)」數據模型進行深入的政策挑戰分析。尤其是民國130年失智症人口將突破66萬（佔全台人口3.00%）對健康照護體系、社會長照保險、早期居家篩檢防線產生的劇烈衝擊，應如何啟動前瞻性的「高齡友善失智防禦家園方案」？`;
-            if (inputField) {
-                inputField.value = targetPrompt;
-                sendChatMessage();
-            }
-        }
-
-        // Dynamic Strategic Report Modal System (C-Level Summary)
-        async function generateStrategicReport() {
-            const modal = document.getElementById('strategy-modal');
-            const content = document.getElementById('strategy-content');
-            const title = document.getElementById('strategy-modal-title');
-            
-            modal.classList.remove('hidden');
-            title.innerText = `✨ 民國 ${currentYear} 年 (西元 ${totalData[currentYear].adYear} 年) AI 戰略決策政策報告`;
-            
-            content.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-12 space-y-3">
-                    <span class="flex h-3 w-3 relative">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
-                    </span>
-                    <p class="text-xs font-bold text-slate-500 dark:text-slate-400 animate-pulse">
-                        決策大腦正在調度民國 ${currentYear} 年死因明細數據模型進行跨向度推估...
-                    </p>
-                </div>
-            `;
-
-            const metrics = totalData[currentYear];
-            const activeTop10 = getSortedTop10(currentYear);
-            let top10Brief = activeTop10.map(item => `順位 ${item.rank}: ${item.name} (死亡數: ${item.deaths}人, 死亡率: ${item.rate})`).join('\n');
-
-            const queryPrompt = `請針對中華民國 ${currentYear} 年的臺灣十大死因數據撰寫一份專為衛福政策高層設計的『戰略決策報告』。
-            
-            當期數據指標模型：
-            - 總死亡人數：${metrics.deaths} 人
-            - 粗死亡率：${metrics.rate} / 每十萬人口
-            - 標準化死亡率：${metrics.stdRate}
-            - 死亡年齡中位數：${metrics.medianAge} 歲
-            
-            死因排名明細：
-            ${top10Brief}
-            
-            請結合長期高齡化趨勢、心血管疾病、肺炎與癌症共病，提供 3 個關鍵政策建議與長照 3.0 的對接戰略，格式必須美觀且條理清晰。`;
-
-            try {
-                const response = await callGeminiAPI(queryPrompt);
-                content.innerHTML = `<div class="prose dark:prose-invert max-w-none text-xs text-slate-700 dark:text-slate-300">${formatMarkdown(response)}</div>`;
-            } catch (err) {
-                content.innerHTML = `
-                    <div class="text-center py-8 text-rose-500">
-                        <p class="font-bold">⚠️ 無法生成報告</p>
-                        <p class="text-[11px] text-slate-400 mt-2">連線發生異常。請確認網路設定或稍後再試。</p>
+                    <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-indigo-50 dark:border-slate-800">
+                      <span class="text-xs text-rose-600 font-bold block mb-1">原因 B：人口縮減力道超越高齡化</span>
+                      <span class="text-xs text-slate-500">雖然高齡失智盛行率持續攀升（從 12.16% 升至 12.76%），但因整體高齡世代的絕對人數也開始因大基數人口凋零而收縮，導致失智總人數呈現微幅負增長。</span>
                     </div>
-                `;
+                  </div>
+                  <p class="text-xs text-slate-400 italic">
+                    * 總結：雖然「絕對失智人口數」略微下滑，但「佔全國總人口比」仍然一路上升，高達 5.34%。這代表每 19 位台灣人中就有一位是失智症患者，家庭與醫療負擔不減反增！
+                  </p>
+                </div>
+
+                <!-- Footer with redirection link -->
+                <div class="mt-4 pt-4 border-t border-indigo-100 dark:border-slate-800 flex justify-between items-center text-xs">
+                  <span class="text-slate-500 dark:text-slate-400">本數據依據國家發展委員會「中華民國人口中推估」</span>
+                  <button onclick="switchTab('ai-chat')" class="text-brand-600 dark:text-brand-400 font-semibold hover:underline flex items-center">
+                    點此諮詢 AI 應對策略 <i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-0.5"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- TAB: AI CHAT -->
+        <div id="tab-ai-chat" class="space-y-6 tab-content hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-12rem)] min-h-[500px]">
+            
+            <!-- Quick Prompts Panel -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm lg:col-span-1 flex flex-col justify-between">
+              <div>
+                <h4 class="font-bold text-slate-900 dark:text-white flex items-center mb-3">
+                  <i data-lucide="lightbulb" class="w-5 h-5 text-amber-500 mr-2"></i>
+                  智慧對話推薦問題
+                </h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">點擊下方預設的問題，AI 將立即為您進行交叉解讀：</p>
+                <div class="space-y-2">
+                  <button onclick="askPreset('請分析台灣失智症人口成長趨勢對社會長照體系的衝擊？')" class="w-full text-left text-xs bg-slate-50 dark:bg-slate-900 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-800 transition-all font-medium block">
+                    ⚡ 社會長照體系的衝擊？
+                  </button>
+                  <button onclick="askPreset('比較十大死因高齡死亡與失智盛行率的重疊，為什麼兩者關係密切？')" class="w-full text-left text-xs bg-slate-50 dark:bg-slate-900 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-800 transition-all font-medium block">
+                    ⚡ 死亡中位數與失智率重疊？
+                  </button>
+                  <button onclick="askPreset('面對失智人口快速成長，政府、醫療院所和家屬應及早準備哪些方案？')" class="w-full text-left text-xs bg-slate-50 dark:bg-slate-900 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-800 transition-all font-medium block">
+                    ⚡ 政策、社區與家屬因應方案？
+                  </button>
+                </div>
+              </div>
+              
+              <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
+                <span class="text-[10px] text-slate-400 block">由 Gemini 2.5 提供智慧分析</span>
+              </div>
+            </div>
+
+            <!-- Actual Chat Box Panel -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm lg:col-span-3 flex flex-col h-full overflow-hidden">
+              <!-- Chat header -->
+              <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/40">
+                <div class="flex items-center space-x-3">
+                  <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <div>
+                    <h5 class="font-bold text-sm">AI 智慧健康決策助理</h5>
+                    <span class="text-[10px] text-slate-400">已串接全台失智推估及最新十大死因大數據</span>
+                  </div>
+                </div>
+                <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-500 transition-colors flex items-center">
+                  <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i> 清除對話紀錄
+                </button>
+              </div>
+
+              <!-- Message Window -->
+              <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4">
+                <!-- Welcome Message -->
+                <div class="flex items-start space-x-3 max-w-[85%]">
+                  <div class="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white shrink-0">
+                    <i data-lucide="bot" class="w-5 h-5"></i>
+                  </div>
+                  <div class="bg-slate-100 dark:bg-slate-900 p-4 rounded-2xl rounded-tl-none text-sm leading-relaxed">
+                    您好！我是您的 <strong>AI 智慧健康決策助理</strong>。我已為您深度整合了以下數據，並且單位皆已全面換算為 <strong>萬人</strong> 呈現：
+                    <ul class="list-disc list-inside mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-400">
+                      <li>台灣失智症人口推估報告（包含 110 年至 159 年發展，及 65 歲以上高齡盛行率）</li>
+                      <li>內政部及國發會最新人口模型數據</li>
+                      <li>民國 105 至 113 歷年十大死因（標準化死亡率與中位數年齡）</li>
+                    </ul>
+                    <p class="mt-2">您可以向我詢問關於台灣未來的失智人口趨勢、醫療資源規畫、死因高齡重疊性、長照政策發展，或是請我為您設計失智風險篩檢與照顧白皮書等資訊！</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Chat Input Box -->
+              <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40">
+                <form id="chat-form" onsubmit="handleChatSubmit(event)" class="flex items-center space-x-2">
+                  <input type="text" id="chat-input" placeholder="請輸入關於失智症推估、高齡化與政策相關問題..." 
+                    class="flex-1 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm">
+                  <button type="submit" class="px-5 py-3 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-brand-500/15 transition-all flex items-center justify-center">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TAB: DEATH ANALYSIS -->
+        <div id="tab-death-analysis" class="space-y-6 tab-content hidden">
+          <!-- Intro explaining the analysis -->
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-xl font-bold mb-2 flex items-center">
+              <i data-lucide="activity" class="text-rose-500 w-6 h-6 mr-2"></i>
+              致命死因死亡中位數與失智症高齡盛行率的「高重疊性」
+            </h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              根據民國113年最新死因統計，國人死亡年齡中位數普遍落在 77-84 歲（如肺炎中位數達 84 歲、高血壓達 83 歲、心血管及腦血管達 79 歲）。然而，此年齡區段在失智症盛行率上正好處於極速飆升段：<span class="font-semibold text-rose-500">75~79歲(7.19%)、80~84歲(13.03%)、85~89歲(21.92%)</span>。
+              這代表多數高齡慢性病死者在生命最後的幾年中，可能正面臨著<strong>「慢性病與失智症雙重侵襲（共病）」</strong>。
+            </p>
+          </div>
+
+          <!-- Age Overlap Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Card 1: 75-79 years -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between border-l-4 border-l-emerald-500">
+              <div class="space-y-3">
+                <span class="text-xs bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-300 font-bold px-2.5 py-1 rounded-full">高齡轉折區段</span>
+                <h4 class="text-lg font-bold">75 - 79 區間</h4>
+                <div class="py-2">
+                  <div class="flex justify-between text-xs mb-1">
+                    <span>失智症盛行率</span>
+                    <span class="font-bold text-emerald-600">7.19%</span>
+                  </div>
+                  <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div class="bg-emerald-500 h-full" style="width: 7.19%"></div>
+                  </div>
+                </div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                  <div class="font-semibold text-slate-700 dark:text-slate-300">重疊主要死因中位數：</div>
+                  <div>• 前十大死因總計：中位數 77-78 歲</div>
+                  <div>• 蓄意自我傷害（自殺）：中位數 52 歲 (早於此段)</div>
+                </div>
+              </div>
+              <p class="text-xs mt-4 text-emerald-700 dark:text-emerald-300 bg-emerald-50/50 dark:bg-emerald-950/20 p-2.5 rounded-lg">
+                ⚠️ 此階段長者約每 14 人有 1 位失智，是亞健康與輕度失智早期發現與防範黃金期。
+              </p>
+            </div>
+
+            <!-- Card 2: 80-84 years -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between border-l-4 border-l-amber-500">
+              <div class="space-y-3">
+                <span class="text-xs bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300 font-bold px-2.5 py-1 rounded-full">高共病警戒區段</span>
+                <h4 class="text-lg font-bold">80 - 84 區間</h4>
+                <div class="py-2">
+                  <div class="flex justify-between text-xs mb-1">
+                    <span>失智症盛行率</span>
+                    <span class="font-bold text-amber-600">13.03%</span>
+                  </div>
+                  <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div class="bg-amber-500 h-full" style="width: 13.03%"></div>
+                  </div>
+                </div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                  <div class="font-semibold text-slate-700 dark:text-slate-300">重疊主要死因中位數：</div>
+                  <div>• 肺炎：中位數 84 歲</div>
+                  <div>• 高血壓性疾病：中位數 83 歲</div>
+                  <div>• 慢性下呼吸道疾病：中位數 83 歲</div>
+                </div>
+              </div>
+              <p class="text-xs mt-4 text-amber-700 dark:text-amber-300 bg-amber-50/50 dark:bg-amber-950/20 p-2.5 rounded-lg">
+                ⚠️ 此階段長者約每 7-8 人有 1 位失智，肺炎和高血壓死者可能多伴隨中重度失智症。
+              </p>
+            </div>
+
+            <!-- Card 3: 85+ years -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between border-l-4 border-l-rose-500">
+              <div class="space-y-3">
+                <span class="text-xs bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 font-bold px-2.5 py-1 rounded-full">極重度威脅區段</span>
+                <h4 class="text-lg font-bold">85 以上超高齡</h4>
+                <div class="py-2">
+                  <div class="flex justify-between text-xs mb-1">
+                    <span>失智症盛行率 (85-89 / 90+)</span>
+                    <span class="font-bold text-rose-600">21.92% / 36.88%</span>
+                  </div>
+                  <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div class="bg-rose-500 h-full" style="width: 29.4%"></div>
+                  </div>
+                </div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                  <div class="font-semibold text-slate-700 dark:text-slate-300">超高齡共病死因：</div>
+                  <div>• 肺炎、慢性衰竭與各類器官衰退</div>
+                  <div>• 照護環境與心理支持重度依賴者</div>
+                </div>
+              </div>
+              <p class="text-xs mt-4 text-rose-700 dark:text-rose-300 bg-rose-50/50 dark:bg-rose-950/20 p-2.5 rounded-lg">
+                ⚠️ 到了此年齡段，每 3 到 5 人就有一名失智患者，居家與專業長照需求達最高峰。
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Deep-dive Death Stats Table of 113 -->
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+            <h4 class="font-bold mb-4 flex items-center">
+              <i data-lucide="table" class="w-5 h-5 text-indigo-500 mr-2"></i>
+              最新年度 (113年) 十大死因與年齡中位數對照表
+            </h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left">
+                <thead class="bg-slate-50 dark:bg-slate-900 text-xs uppercase text-slate-500">
+                  <tr>
+                    <th class="px-6 py-3">順位</th>
+                    <th class="px-6 py-3">死亡原因</th>
+                    <th class="px-6 py-3 text-right">死亡人數 (萬人)</th>
+                    <th class="px-6 py-3 text-right">標準化死亡率 (每十萬人口)</th>
+                    <th class="px-6 py-3 text-center">死亡年齡中位數 (歲)</th>
+                    <th class="px-6 py-3 text-center">同齡段失智率關聯預測</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tr>
+                    <td class="px-6 py-4 font-semibold">1</td>
+                    <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">C00-C97 惡性腫瘤</td>
+                    <td class="px-6 py-4 text-right">5.40 萬</td>
+                    <td class="px-6 py-4 text-right">113.3</td>
+                    <td class="px-6 py-4 text-center font-bold">71.0</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">低共病機率 (~3.4%)</span></td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4 font-semibold">2</td>
+                    <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">心臟疾病 (高血壓性除外)</td>
+                    <td class="px-6 py-4 text-right">2.33 萬</td>
+                    <td class="px-6 py-4 text-right">45.5</td>
+                    <td class="px-6 py-4 text-center font-bold text-amber-500">79.0</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">中等共病 (約 7.2%)</span></td>
+                  </tr>
+                  <tr class="bg-amber-50/20 dark:bg-slate-900/40">
+                    <td class="px-6 py-4 font-semibold">3</td>
+                    <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">J12-J18 肺炎</td>
+                    <td class="px-6 py-4 text-right">1.73 萬</td>
+                    <td class="px-6 py-4 text-right">30.1</td>
+                    <td class="px-6 py-4 text-center font-bold text-rose-500">84.0</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400">重度共病 (約 13.0%)</span></td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4 font-semibold">4</td>
+                    <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">I60-I69 腦血管疾病</td>
+                    <td class="px-6 py-4 text-right">1.25 萬</td>
+                    <td class="px-6 py-4 text-right">23.9</td>
+                    <td class="px-6 py-4 text-center font-bold text-amber-500">79.0</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">中等共病 (約 7.2%)</span></td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4 font-semibold">5</td>
+                    <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">E10-E14 糖尿病</td>
+                    <td class="px-6 py-4 text-right">1.07 萬</td>
+                    <td class="px-6 py-4 text-right">20.2</td>
+                    <td class="px-6 py-4 text-center font-bold text-amber-500">79.0</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">中等共病 (約 7.2%)</span></td>
+                  </tr>
+                  <tr class="bg-amber-50/20 dark:bg-slate-900/40">
+                    <td class="px-6 py-4 font-semibold">6</td>
+                    <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">I10-I15 高血壓性疾病</td>
+                    <td class="px-6 py-4 text-right">0.89 萬</td>
+                    <td class="px-6 py-4 text-right">16.0</td>
+                    <td class="px-6 py-4 text-center font-bold text-rose-500">83.0</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400">重度共病 (約 13.0%)</span></td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4 font-semibold">7</td>
+                    <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">事故傷害</td>
+                    <td class="px-6 py-4 text-right">0.69 萬</td>
+                    <td class="px-6 py-4 text-right">19.2</td>
+                    <td class="px-6 py-4 text-center font-bold">66.0</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">低共病機率 (~3.4%)</span></td>
+                  </tr>
+                  <tr class="bg-amber-50/20 dark:bg-slate-900/40">
+                    <td class="px-6 py-4 font-semibold">8</td>
+                    <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">J40-J47 慢性下呼吸道疾病</td>
+                    <td class="px-6 py-4 text-right">0.62 萬</td>
+                    <td class="px-6 py-4 text-right">10.7</td>
+                    <td class="px-6 py-4 text-center font-bold text-rose-500">83.0</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400">重度共病 (約 13.0%)</span></td>
+                  </tr>
+                  <tr class="bg-amber-50/20 dark:bg-slate-900/40">
+                    <td class="px-6 py-4 font-semibold">9</td>
+                    <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">腎炎、腎病症候群及腎病變</td>
+                    <td class="px-6 py-4 text-right">0.57 萬</td>
+                    <td class="px-6 py-4 text-right">10.4</td>
+                    <td class="px-6 py-4 text-center font-bold text-amber-500">81.0</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400">重度共病 (約 13.0%)</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-4 text-xs text-slate-400 text-right">
+              標準化死亡率係以2000年WHO之世界標準人口數為基準推算。人數皆由原「人數（人）」換算為「萬人」。
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: RAW DATA -->
+        <div id="tab-raw-data" class="space-y-6 tab-content hidden">
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+              <div>
+                <h3 class="text-lg font-bold">全台失智人口中推估預估明細數據（已統一折算為萬人呈現）</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">原以「仟人」計，現已轉換並以「萬人」為單位展示，以確保與其他圖表單位吻合。</p>
+              </div>
+              <button onclick="exportToCSV()" class="flex items-center space-x-2 bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow shadow-brand-500/10">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>導出數據為 CSV 檔案</span>
+              </button>
+            </div>
+
+            <!-- Table responsive wrapping -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left border-collapse" id="projectionsTable">
+                <thead class="bg-slate-50 dark:bg-slate-900 text-xs text-slate-500 uppercase border-b border-slate-200 dark:border-slate-800">
+                  <tr>
+                    <th class="px-4 py-3 font-semibold text-center">預估年度</th>
+                    <th class="px-4 py-3 font-semibold text-right">全國總人口 (萬人)</th>
+                    <th class="px-4 py-3 font-semibold text-right">45-64歲失智 (萬人)</th>
+                    <th class="px-4 py-3 font-semibold text-right">65歲以上失智 (萬人)</th>
+                    <th class="px-4 py-3 font-semibold text-right">65歲以上失智盛行率</th>
+                    <th class="px-4 py-3 font-semibold text-right">失智總人口 (萬人)</th>
+                    <th class="px-4 py-3 font-semibold text-right">佔全國總人口比</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800" id="raw-table-body">
+                  <!-- Generated via script -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Notification Info Modal -->
+  <div id="info-modal" class="fixed inset-0 bg-slate-950/60 flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+      <div class="flex items-center space-x-3 text-brand-600 dark:text-brand-400">
+        <i data-lucide="bell" class="w-6 h-6 animate-swing"></i>
+        <h4 class="font-bold text-lg">系統重要健康通報</h4>
+      </div>
+      <div class="text-sm text-slate-600 dark:text-slate-300 space-y-2">
+        <p><strong>🚨 重大健康趨勢提醒：</strong></p>
+        <p>台灣正加速邁入「超高齡社會（65歲以上人口佔比超過20%）」。失智症患者將迎來爆發式增長。</p>
+        <p><strong>💡 關鍵預測：</strong></p>
+        <ul class="list-disc list-inside space-y-1 text-xs text-slate-500">
+          <li>預計在<strong>民國 120 年</strong>，全台失智人口突破 <strong>45.66 萬人</strong>。</li>
+          <li>到<strong>民國 155 年</strong>，將達到最高峰 <strong>85.62 萬人</strong>。</li>
+          <li>由於少子化導致總人口裝死式萎縮，失智總比例將高達總人口的 <strong>5.34%</strong>！</li>
+        </ul>
+      </div>
+      <div class="pt-2">
+        <button onclick="closeNotificationModal()" class="w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-all text-sm">
+          我已閱讀並理解警訊
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Raw Data Model from Taiwan Alzheimer's Disease Association (TADA)
+    const dataset = [
+      { year: "110", yearFull: "110", totalPop: 2337.5, age45_64: 1.13, age65: 30.08, prev65: "7.64%", totalDementia: 31.22, pctTotal: "1.34%", ratioDesc: "每 74 人中有 1 位" },
+      { year: "115", yearFull: "115", totalPop: 2340.4, age45_64: 1.17, age65: 36.13, prev65: "7.41%", totalDementia: 37.30, pctTotal: "1.59%", ratioDesc: "每 63 人中有 1 位" },
+      { year: "120", yearFull: "120", totalPop: 2314.0, age45_64: 1.15, age65: 44.51, prev65: "7.77%", totalDementia: 45.66, pctTotal: "1.97%", ratioDesc: "每 51 人中有 1 位" },
+      { year: "125", yearFull: "125", totalPop: 2269.3, age45_64: 1.11, age65: 54.22, prev65: "8.52%", totalDementia: 55.34, pctTotal: "2.44%", ratioDesc: "每 41 人中有 1 位" },
+      { year: "130", yearFull: "130", totalPop: 2202.4, age45_64: 1.08, age65: 64.94, prev65: "9.51%", totalDementia: 66.01, pctTotal: "3.00%", ratioDesc: "每 33 人中有 1 位" },
+      { year: "135", yearFull: "135", totalPop: 2116.2, age45_64: 0.99, age65: 74.02, prev65: "10.15%", totalDementia: 75.01, pctTotal: "3.54%", ratioDesc: "每 28 人中有 1 位" },
+      { year: "140", yearFull: "140", totalPop: 2015.7, age45_64: 0.89, age65: 79.20, prev65: "10.67%", totalDementia: 80.10, pctTotal: "3.97%", ratioDesc: "每 25 人中有 1 位" },
+      { year: "145", yearFull: "145", totalPop: 1905.6, age45_64: 0.80, age65: 82.30, prev65: "11.22%", totalDementia: 83.10, pctTotal: "4.36%", ratioDesc: "每 23 人中有 1 位" },
+      { year: "150", yearFull: "150", totalPop: 1791.1, age45_64: 0.72, age65: 84.37, prev65: "11.65%", totalDementia: 85.09, pctTotal: "4.75%", ratioDesc: "每 21 人中有 1 位" },
+      { year: "155", yearFull: "155", totalPop: 1674.7, age45_64: 0.64, age65: 84.98, prev65: "12.16%", totalDementia: 85.62, pctTotal: "5.11%", ratioDesc: "每 20 人中有 1 位" },
+      { year: "159", yearFull: "159", totalPop: 1581.4, age45_64: 0.60, age65: 83.92, prev65: "12.76%", totalDementia: 84.52, pctTotal: "5.34%", ratioDesc: "每 19 人中有 1 位" }
+    ];
+
+    // Five Year Age Prevalence (Remains % ratios)
+    const ageData = {
+      labels: ['65~69', '70~74', '75~79', '80~84', '85~89', '90以上'],
+      prevalence: [3.40, 3.46, 7.19, 13.03, 21.92, 36.88]
+    };
+
+    // CAGR over periods (%)
+    const cagrData = {
+      labels: ['110-115', '115-120', '120-125', '125-130', '130-135', '135-140', '140-145', '145-150', '150-155', '155-159'],
+      cagr: [3.62, 4.13, 3.91, 3.59, 2.59, 1.32, 0.74, 0.47, 0.12, -0.32]
+    };
+
+    let activeTab = 'dashboard';
+    let selectedYear = '110';
+    let chart1, chart2, chart3;
+
+    window.onload = function() {
+      lucide.createIcons();
+      initRawTable();
+      initCharts();
+      syncSlider(110);
+    };
+
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      setTimeout(() => {
+        rebuildCharts();
+      }, 200);
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    function switchTab(tabName) {
+      activeTab = tabName;
+      
+      document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.add('hidden');
+        el.classList.remove('block');
+      });
+      
+      const target = document.getElementById(`tab-${tabName}`);
+      if (target) {
+        target.classList.remove('hidden');
+        target.classList.add('block');
+      }
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = "tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800";
+      });
+
+      const activeBtn = document.getElementById(`btn-tab-${tabName}`);
+      if (activeBtn) {
+        activeBtn.className = "tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all bg-brand-500 text-white shadow-md shadow-brand-500/10";
+      }
+
+      const headers = {
+        'dashboard': '台灣失智症人口推估與健康洞察儀表板',
+        'ai-chat': 'AI 智慧高齡醫學與健康對話決策中心',
+        'death-analysis': '死因死亡中位數與失智症高齡盛行率交叉解讀',
+        'raw-data': '完整歷史與未來人口推估數據表 (萬人)'
+      };
+      document.getElementById('header-title').textContent = headers[tabName] || '失智症大數據儀表板';
+    }
+
+    function openNotificationModal() {
+      document.getElementById('info-modal').classList.remove('hidden');
+    }
+    function closeNotificationModal() {
+      document.getElementById('info-modal').classList.add('hidden');
+    }
+
+    // Initialize the projections detailed table
+    function initRawTable() {
+      const tbody = document.getElementById('raw-table-body');
+      tbody.innerHTML = '';
+      dataset.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors";
+        tr.innerHTML = `
+          <td class="px-4 py-3 text-center font-bold text-slate-900 dark:text-white">${row.yearFull}</td>
+          <td class="px-4 py-3 text-right">${row.totalPop.toLocaleString()} 萬人</td>
+          <td class="px-4 py-3 text-right">${row.age45_64.toFixed(2)} 萬人</td>
+          <td class="px-4 py-3 text-right text-brand-600 dark:text-brand-400 font-semibold">${row.age65.toFixed(2)} 萬人</td>
+          <td class="px-4 py-3 text-right font-medium text-amber-500">${row.prev65}</td>
+          <td class="px-4 py-3 text-right font-bold text-rose-500">${row.totalDementia.toFixed(2)} 萬人</td>
+          <td class="px-4 py-3 text-right font-bold">${row.pctTotal}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Slider Sync & State Engine
+    function syncSlider(val) {
+      const numericVal = parseInt(val);
+      let closestObj = dataset[0];
+      let minDiff = Infinity;
+      
+      dataset.forEach(d => {
+        const yearInt = parseInt(d.year);
+        const diff = Math.abs(yearInt - numericVal);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestObj = d;
+        }
+      });
+
+      selectedYear = closestObj.year;
+      document.getElementById('yearSlider').value = selectedYear;
+      document.getElementById('display-selected-year').textContent = selectedYear;
+
+      updateKPICards(closestObj);
+
+      document.querySelectorAll('.year-btn').forEach(btn => {
+        if (btn.textContent === selectedYear) {
+          btn.className = "year-btn px-3 py-1.5 bg-white text-brand-700 text-xs font-bold rounded-lg transition-all shadow hover:scale-105";
+        } else {
+          btn.className = "year-btn px-3 py-1.5 bg-white/10 text-white text-xs font-bold rounded-lg transition-all hover:bg-white/20 hover:scale-105";
+        }
+      });
+    }
+
+    function selectYear(yr) {
+      syncSlider(yr);
+    }
+
+    // Card Value Updates
+    function updateKPICards(data) {
+      document.getElementById('kpi-total-dementia').textContent = `${data.totalDementia.toFixed(2)} 萬`;
+      
+      const baseTotal = 31.22; // 31.22 萬人
+      const pctIncrease = (((data.totalDementia - baseTotal) / baseTotal) * 100).toFixed(1);
+      const changeEl = document.getElementById('kpi-total-change');
+      if (parseFloat(pctIncrease) === 0) {
+        changeEl.innerHTML = `<i data-lucide="minus" class="w-3.5 h-3.5 mr-1"></i>基準線`;
+        changeEl.className = "font-bold flex items-center text-slate-500";
+      } else {
+        changeEl.innerHTML = `<i data-lucide="trending-up" class="w-3.5 h-3.5 mr-1"></i>+${pctIncrease}%`;
+        changeEl.className = "font-bold flex items-center text-rose-500";
+      }
+
+      document.getElementById('kpi-percent-total').textContent = data.pctTotal;
+      document.getElementById('kpi-ratio-desc').textContent = data.ratioDesc;
+      document.getElementById('kpi-national-total').textContent = `全國估計: ${data.totalPop.toFixed(1)} 萬人`;
+
+      document.getElementById('kpi-65plus-total').textContent = `${data.age65.toFixed(2)} 萬人`;
+      document.getElementById('kpi-65plus-prev').textContent = `(${data.prev65})`;
+      const seniorsShare = ((data.age65 / data.totalDementia) * 100).toFixed(1);
+      document.getElementById('kpi-65plus-ratio').textContent = `佔總失智人口 ${seniorsShare}%`;
+
+      document.getElementById('kpi-younger').textContent = `${data.age45_64.toFixed(2)} 萬`;
+
+      lucide.createIcons();
+    }
+
+    function initCharts() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const textColor = isDark ? '#94a3b8' : '#475569';
+      const gridColor = isDark ? '#334155' : '#e2e8f0';
+
+      // 1. Trend Chart
+      const trendCtx = document.getElementById('trendChart').getContext('2d');
+      chart1 = new Chart(trendCtx, {
+        type: 'bar',
+        data: {
+          labels: dataset.map(d => d.year), // Only pure numeric labels on timeline
+          datasets: [
+            {
+              label: '失智總人口 (萬人)',
+              data: dataset.map(d => d.totalDementia),
+              backgroundColor: 'rgba(59, 130, 246, 0.75)',
+              borderColor: '#3b82f6',
+              borderWidth: 1,
+              borderRadius: 6,
+              yAxisID: 'y'
+            },
+            {
+              label: '佔總人口比 (%)',
+              data: dataset.map(d => parseFloat(d.pctTotal)),
+              type: 'line',
+              borderColor: '#f43f5e',
+              borderWidth: 3,
+              pointBackgroundColor: '#f43f5e',
+              pointHoverRadius: 7,
+              fill: false,
+              tension: 0.3,
+              yAxisID: 'y1'
             }
-        }
-
-        // Close strategic modal
-        function closeStrategyModal() {
-            const modal = document.getElementById('strategy-modal');
-            modal.classList.add('hidden');
-        }
-
-        // ================= 9. DATABASE TABLES & CSV EXPORT =================
-
-        // Switch dataset source inside Database Tab
-        function switchTableSource(source) {
-            activeTableSource = source;
-            const btnDeaths = document.getElementById('btn-tbl-deaths');
-            const btnDementia = document.getElementById('btn-tbl-dementia');
-            const tableTitle = document.getElementById('table-tab-title');
-
-            if (source === 'deaths') {
-                btnDeaths.className = "px-4 py-1.5 text-xs font-bold bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-300 rounded-lg shadow-sm transition-all";
-                btnDementia.className = "px-4 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 rounded-lg transition-all";
-                tableTitle.innerText = "十大死因多維度統計明細數據庫";
-            } else {
-                btnDementia.className = "px-4 py-1.5 text-xs font-bold bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-300 rounded-lg shadow-sm transition-all";
-                btnDeaths.className = "px-4 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 rounded-lg transition-all";
-                tableTitle.innerText = "臺灣失智症人口全國成長推估數據庫";
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: textColor }
+            },
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              grid: { color: gridColor },
+              ticks: { color: textColor },
+              title: { display: true, text: '萬人', color: textColor }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: { color: textColor, callback: value => value + '%' },
+              title: { display: true, text: '百分比 (%)', color: textColor }
             }
-
-            renderTable();
-        }
-
-        // Render Table dynamically based on chosen source
-        function renderTable() {
-            const head = document.getElementById('table-head');
-            const body = document.getElementById('table-body');
-            const searchVal = document.getElementById('table-search').value.toLowerCase();
-
-            head.innerHTML = '';
-            body.innerHTML = '';
-
-            if (activeTableSource === 'deaths') {
-                // Table Columns for Cause of Death
-                head.innerHTML = `
-                    <tr class="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold text-[11px] uppercase tracking-wider">
-                        <th class="p-3.5">順位 (當期)</th>
-                        <th class="p-3.5">疾病與死亡原因名稱</th>
-                        <th class="p-3.5">死亡人數 (人)</th>
-                        <th class="p-3.5">粗死亡率 (每10萬人口)</th>
-                        <th class="p-3.5">標準化死亡率</th>
-                        <th class="p-3.5">年齡中位數 (歲)</th>
-                    </tr>
-                `;
-
-                const activeTop10 = getSortedTop10(currentYear);
-                const filtered = activeTop10.filter(item => item.name.toLowerCase().includes(searchVal));
-
-                if (filtered.length === 0) {
-                    body.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 text-xs">查無相關死因數據</td></tr>`;
-                    return;
-                }
-
-                filtered.forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors border-b border-slate-100 dark:border-slate-800/60 text-slate-700 dark:text-slate-300";
-                    tr.innerHTML = `
-                        <td class="p-3.5 font-bold font-mono text-teal-500 dark:text-teal-400">#0${item.rank}</td>
-                        <td class="p-3.5">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${item.color}"></span>
-                                <span class="font-black">${item.name}</span>
-                            </div>
-                        </td>
-                        <td class="p-3.5 font-semibold">${item.deaths.toLocaleString()} 人</td>
-                        <td class="p-3.5 font-black">${item.rate}</td>
-                        <td class="p-3.5 font-mono text-indigo-500 dark:text-indigo-400">${item.stdRate}</td>
-                        <td class="p-3.5 font-mono">${item.medianAge} 歲</td>
-                    `;
-                    body.appendChild(tr);
-                });
-
-            } else {
-                // Table Columns for Dementia Population Projection
-                head.innerHTML = `
-                    <tr class="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold text-[11px] uppercase tracking-wider">
-                        <th class="p-3.5">推估年度 (民國年)</th>
-                        <th class="p-3.5">全國總人口 (千人)</th>
-                        <th class="p-3.5">45-64歲失智數 (千人)</th>
-                        <th class="p-3.5">65歲以上失智數 (千人)</th>
-                        <th class="p-3.5">65歲以上失智率</th>
-                        <th class="p-3.5">全台失智總人口 (千人)</th>
-                        <th class="p-3.5">失智人口佔比 (總人口)</th>
-                    </tr>
-                `;
-
-                const filtered = dementiaData.filter(item => item.year.toLowerCase().includes(searchVal));
-
-                if (filtered.length === 0) {
-                    body.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400 text-xs">查無推估明細</td></tr>`;
-                    return;
-                }
-
-                filtered.forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors border-b border-slate-100 dark:border-slate-800/60 text-slate-700 dark:text-slate-300";
-                    tr.innerHTML = `
-                        <td class="p-3.5 font-black text-teal-600 dark:text-teal-400">${item.year}</td>
-                        <td class="p-3.5 font-mono">${item.totalPop}</td>
-                        <td class="p-3.5 font-mono">${item.mci}</td>
-                        <td class="p-3.5 font-semibold">${item.elderlyDementia}</td>
-                        <td class="p-3.5 font-black text-amber-500">${item.rate}</td>
-                        <td class="p-3.5 font-bold">${item.totalDementia}</td>
-                        <td class="p-3.5 font-mono text-indigo-500 dark:text-indigo-400 font-bold">${item.pct}</td>
-                    `;
-                    body.appendChild(tr);
-                });
+          },
+          plugins: {
+            legend: {
+              labels: { color: textColor }
             }
+          }
         }
+      });
 
-        // Export Database Tab dataset to traditional Chinese CSV (with UTF-8 BOM)
-        function exportCSV() {
-            const activeTop10 = getSortedTop10(currentYear);
-            let csvContent = "\uFEFF"; // UTF-8 BOM for Microsoft Excel Traditional Chinese
-            csvContent += "當期順位,疾病與死亡原因名稱,死亡人數(人),粗死亡率(每10萬人),標準化死亡率,死亡中位年齡(歲)\n";
-
-            activeTop10.forEach(item => {
-                const row = [
-                    item.rank,
-                    `"${item.name}"`,
-                    item.deaths,
-                    item.rate,
-                    item.stdRate || 'N/A',
-                    item.medianAge || 'N/A'
-                ].join(",");
-                csvContent += row + "\n";
-            });
-
-            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-            const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", activeTableSource === 'deaths' ? `臺灣_${currentYear}年度_前十大死因明細.csv` : `臺灣_失智人口長期推估數據表.csv`);
-            link.style.visibility = "hidden";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+      // 2. Age Prevalence Chart
+      const ageCtx = document.getElementById('ageChart').getContext('2d');
+      chart2 = new Chart(ageCtx, {
+        type: 'bar',
+        data: {
+          labels: ageData.labels, // Clean age bracket labels
+          datasets: [{
+            label: '盛行率 (%)',
+            data: ageData.prevalence,
+            backgroundColor: 'rgba(244, 63, 94, 0.75)',
+            borderColor: '#f43f5e',
+            borderWidth: 1.5,
+            borderRadius: 8,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: textColor }
+            },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, callback: value => value + '%' },
+              title: { display: true, text: '盛行率', color: textColor }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
         }
-    </script>
+      });
+
+      // 3. CAGR Period Chart
+      const cagrCtx = document.getElementById('cagrChart').getContext('2d');
+      chart3 = new Chart(cagrCtx, {
+        type: 'line',
+        data: {
+          labels: cagrData.labels, // Clean range numeric labels
+          datasets: [{
+            label: '年複合成長率 (CAGR)',
+            data: cagrData.cagr,
+            borderColor: '#0d9488',
+            backgroundColor: 'rgba(13, 148, 136, 0.1)',
+            fill: true,
+            tension: 0.4,
+            borderWidth: 3,
+            pointBackgroundColor: '#0d9488',
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: textColor, font: { size: 10 } }
+            },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, callback: value => value + '%' },
+              title: { display: true, text: '成長率', color: textColor, font: { size: 10 } }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    function rebuildCharts() {
+      if (chart1) chart1.destroy();
+      if (chart2) chart2.destroy();
+      if (chart3) chart3.destroy();
+      initCharts();
+    }
+
+    function exportToCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+      csvContent += "預估年度,全國總人口 (萬人),45-64歲失智人口 (萬人),65歲以上失智人口 (萬人),65歲以上失智盛行率,失智總人口 (萬人),佔全國總人口比例\n";
+      
+      dataset.forEach(r => {
+        csvContent += `${r.year},${r.totalPop.toFixed(2)},${r.age45_64.toFixed(2)},${r.age65.toFixed(2)},${r.prev65},${r.totalDementia.toFixed(2)},${r.pctTotal}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `台灣失智症人口推估數據表_${selectedYear}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // --- AI SMART INTELLIGENCE CHAT ---
+    const apiKey = ""; 
+
+    const SYSTEM_PROMPT = `你是一位專業的台灣高齡醫學、人口結構學與長期照顧政策專家。
+你正在協助使用者解讀「台灣失智症人口預估數據」與「歷年十大死因與標準化死亡率」之間的深度關聯。
+
+請注意，資料已全面轉換為「萬人」單位呈現，不再使用「仟人」！
+【1. 台灣失智症人口推估報告 (以萬人計)】：
+- 65歲以上老人分年齡層失智症盛行率：
+  * 65~69：3.40%
+  * 70~74：3.46%
+  * 75~79：7.19%
+  * 80~84：13.03%
+  * 85~89：21.92%
+  * 90以上：36.88%
+  * 趨勢：每五歲盛行率倍增。
+- 輕微認知障礙 (MCI)：佔65歲以上老年人的 18.01%。
+- 45~64歲輕壯年失智盛行率：約千分之1.60 (1.6‰)。
+- 重要推估里程碑：
+  * 110年：失智總人口 31.22 萬人 (佔總人口 1.34%)
+  * 120年：近 45.66 萬人 (佔總人口 1.97%)
+  * 130年：逾 66.01 萬人 (佔總人口 3.00%)
+  * 140年：逾 80.10 萬人 (佔總人口 3.97%)
+  * 150年：逾 85.09 萬人 (佔總人口 4.75%)
+  * 155年高峰：達 85.62 萬人 (佔總人口 5.11%)
+  * 159年：總人口急速下滑，失智總數微幅降至 84.52 萬人，但佔總人口比升至最高峰 5.34%（每19人有1位）
+- 特別解答（末期 CAGR 為負）：
+  * 155年到159年間，失智人口的年複合成長率為 -0.32%。
+  * 這是因為少子化導致台灣全國總人口在 4 年內減少了將近 100 萬人（從 1674.7 萬人萎縮至 1581.4 萬人）。這種急遽的總人口收縮速度大於了高齡化的速度，使得高年齡層的絕對人數也隨之萎縮，因而絕對失智人口稍微下降。但比例（5.34%）依然創下新高，代表社會扶養與醫療重擔更為沉重。
+
+【2. 台灣歷年十大死因深度關聯 (105-113年)】：
+- 許多疾病死亡中位數在 79 ~ 84 歲（如肺炎 84 歲、高血壓 83 歲、心血管及腦血管 79 歲），這與失智盛行率飆升的年齡區段高度吻合。
+
+請遵循以下規範答覆：
+- 專業、客觀，若用戶詢問政策或照護資源，請主動解說。
+- 一律使用繁體中文。`;
+
+    let chatHistory = [];
+
+    async function handleChatSubmit(event) {
+      if (event) event.preventDefault();
+      const inputEl = document.getElementById('chat-input');
+      const query = inputEl.value.trim();
+      if (!query) return;
+
+      inputEl.value = '';
+      appendUserMessage(query);
+      await getAIAssistantResponse(query);
+    }
+
+    function askPreset(promptText) {
+      appendUserMessage(promptText);
+      getAIAssistantResponse(promptText);
+    }
+
+    function appendUserMessage(text) {
+      const chatContainer = document.getElementById('chat-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = "flex items-start space-x-3 justify-end max-w-[85%] ml-auto";
+      msgDiv.innerHTML = `
+        <div class="bg-brand-500 text-white p-4 rounded-2xl rounded-tr-none text-sm leading-relaxed shadow-sm">
+          ${text}
+        </div>
+      `;
+      chatContainer.appendChild(msgDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function appendBotLoading() {
+      const chatContainer = document.getElementById('chat-messages');
+      const loaderDiv = document.createElement('div');
+      loaderDiv.id = "bot-loading";
+      loaderDiv.className = "flex items-start space-x-3 max-w-[85%]";
+      loaderDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white shrink-0">
+          <i data-lucide="bot" class="w-5 h-5"></i>
+        </div>
+        <div class="bg-slate-100 dark:bg-slate-900 p-4 rounded-2xl rounded-tl-none text-sm text-slate-500 flex items-center space-x-2">
+          <span class="inline-block w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
+          <span class="inline-block w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 150ms"></span>
+          <span class="inline-block w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
+          <span class="text-xs">智慧助理研擬中...</span>
+        </div>
+      `;
+      chatContainer.appendChild(loaderDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      lucide.createIcons();
+    }
+
+    function removeBotLoading() {
+      const loader = document.getElementById('bot-loading');
+      if (loader) loader.remove();
+    }
+
+    function appendBotMessage(text) {
+      const chatContainer = document.getElementById('chat-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = "flex items-start space-x-3 max-w-[85%]";
+      
+      const formattedText = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+
+      msgDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white shrink-0">
+          <i data-lucide="bot" class="w-5 h-5"></i>
+        </div>
+        <div class="bg-slate-100 dark:bg-slate-900 p-4 rounded-2xl rounded-tl-none text-sm leading-relaxed font-sans">
+          ${formattedText}
+        </div>
+      `;
+      chatContainer.appendChild(msgDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      lucide.createIcons();
+    }
+
+    function clearChatHistory() {
+      const chatContainer = document.getElementById('chat-messages');
+      chatContainer.innerHTML = `
+        <div class="flex items-start space-x-3 max-w-[85%]">
+          <div class="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white shrink-0">
+            <i data-lucide="bot" class="w-5 h-5"></i>
+          </div>
+          <div class="bg-slate-100 dark:bg-slate-900 p-4 rounded-2xl rounded-tl-none text-sm leading-relaxed">
+            對話紀錄已清除。您可以隨時詢問我關於台灣失智症人口推估、高齡死因共病風險分析以及社會福利政策之新策略。
+          </div>
+        </div>
+      `;
+      chatHistory = [];
+      lucide.createIcons();
+    }
+
+    async function getAIAssistantResponse(userQuery) {
+      appendBotLoading();
+
+      const fetchWithRetry = async (url, options, retries = 5, delay = 1000) => {
+        try {
+          const res = await fetch(url, options);
+          if (!res.ok) throw new Error(`HTTP Error Status: ${res.status}`);
+          return await res.json();
+        } catch (err) {
+          if (retries > 0) {
+            await new Promise(r => setTimeout(r, delay));
+            return fetchWithRetry(url, options, retries - 1, delay * 2);
+          }
+          throw err;
+        }
+      };
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+      const payload = {
+        contents: [
+          ...chatHistory,
+          { role: "user", parts: [{ text: userQuery }] }
+        ],
+        systemInstruction: {
+          parts: [{ text: SYSTEM_PROMPT }]
+        }
+      };
+
+      const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      };
+
+      try {
+        const result = await fetchWithRetry(url, options);
+        removeBotLoading();
+        
+        const responseText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (responseText) {
+          appendBotMessage(responseText);
+          chatHistory.push({ role: "user", parts: [{ text: userQuery }] });
+          chatHistory.push({ role: "model", parts: [{ text: responseText }] });
+          if (chatHistory.length > 20) {
+            chatHistory = chatHistory.slice(chatHistory.length - 20);
+          }
+        } else {
+          appendBotMessage("抱歉，我現在無法解析 API 產生的數據回覆。請再試一次。");
+        }
+      } catch (error) {
+        removeBotLoading();
+        console.error("Gemini Error:", error);
+        appendBotMessage(`⚠️ 系統與 AI 決策伺服器連線中斷。原因：${error.message}。請確認您的網路連線或稍後再試。`);
+      }
+    }
+  </script>
 </body>
 </html>
